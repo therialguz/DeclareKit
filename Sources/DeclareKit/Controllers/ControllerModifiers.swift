@@ -43,7 +43,7 @@ extension RepresentableController {
     /// ViewController { ... }
     ///     .tabItem(title: "Settings")
     /// ```
-    func tabItem(title: String) -> some RepresentableController {
+    func tabBarItem(title: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
             vc.tabBarItem.title = title
         }
@@ -58,7 +58,7 @@ extension RepresentableController {
     /// NavigationController { ... }
     ///     .tabItem(title: "Home", systemImage: "house")
     /// ```
-    func tabItem(title: String, systemImage: String) -> some RepresentableController {
+    func tabBarItem(title: String, systemImage: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
             vc.tabBarItem.title = title
             vc.tabBarItem.image = UIImage(systemName: systemImage)
@@ -74,7 +74,7 @@ extension RepresentableController {
     /// ViewController { ... }
     ///     .tabItem(title: "Profile", image: myCustomImage)
     /// ```
-    func tabItem(title: String, image: UIImage?) -> some RepresentableController {
+    func tabBarItem(title: String, image: UIImage?) -> some RepresentableController {
         ModifiedController(content: self) { vc in
             vc.tabBarItem = UITabBarItem(title: title, image: image, tag: 0)
         }
@@ -90,9 +90,9 @@ extension RepresentableController {
     ///     .tabItem(title: "Messages", systemImage: "message")
     ///     .tabBadge("5")
     /// ```
-    func tabBadge(_ value: String?) -> some RepresentableController {
+    func tabBarItem(badge: String?) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem?.badgeValue = value
+            vc.tabBarItem?.badgeValue = badge
         }
     }
 
@@ -105,9 +105,9 @@ extension RepresentableController {
     ///     .tabBadge("3")
     ///     .tabBadgeColor(.systemBlue)
     /// ```
-    func tabBadgeColor(_ color: UIColor) -> some RepresentableController {
+    func tabBarItem(badgeColor: UIColor) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem?.badgeColor = color
+            vc.tabBarItem?.badgeColor = badgeColor
         }
     }
 
@@ -119,9 +119,9 @@ extension RepresentableController {
     ///     .tabItem(title: "Settings", systemImage: "gear")
     ///     .tabAccessibilityLabel("Settings Tab")
     /// ```
-    func tabAccessibilityLabel(_ label: String) -> some RepresentableController {
+    func tabBarItem(accessibilityLabel: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem?.accessibilityLabel = label
+            vc.tabBarItem?.accessibilityLabel = accessibilityLabel
         }
     }
 
@@ -133,9 +133,9 @@ extension RepresentableController {
     ///     .tabItem(title: "Profile", systemImage: "person")
     ///     .tabAccessibilityHint("Double tap to view your profile")
     /// ```
-    func tabAccessibilityHint(_ hint: String) -> some RepresentableController {
+    func tabBarItem(accessibilityHint: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem?.accessibilityHint = hint
+            vc.tabBarItem?.accessibilityHint = accessibilityHint
         }
     }
 }

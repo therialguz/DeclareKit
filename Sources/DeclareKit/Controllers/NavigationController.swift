@@ -1,4 +1,7 @@
 import UIKit
+#if canImport(SwiftUI)
+import SwiftUI
+#endif
 
 /// A navigation controller that wraps view content.
 ///
@@ -16,4 +19,13 @@ struct NavigationController<Content: RepresentableController>: RepresentableCont
         let rootViewController = content.buildController()
         return UINavigationController(rootViewController: rootViewController)
     }
+}
+
+#Preview {
+    NavigationController {
+        ViewController {
+            Label("Miau")
+        }
+    }
+    .buildController()
 }

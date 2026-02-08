@@ -33,3 +33,24 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
         return tabBarController
     }
 }
+
+#Preview {
+    TabBarController {
+        NavigationController {
+            
+        }
+        .tabBarItem(title: "Home", systemImage: "house.fill")
+        
+        NavigationController {
+            
+        }
+        .tabBarItem(title: "Settings", systemImage: "gearshape.fill")
+        .tabBarItem(badge: "4")
+        
+        NavigationController {
+            
+        }
+        .tabBarItem(UITabBarItem(tabBarSystemItem: .search, tag: 0))
+    }
+    .buildController()
+}

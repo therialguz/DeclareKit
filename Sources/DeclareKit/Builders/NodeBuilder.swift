@@ -12,10 +12,6 @@ enum NodeBuilder {
     static func buildExpression<Content>(_ content: Content) -> Content where Content : RepresentableNode {
         content
     }
-    
-    static func buildExpression<Content>(_ expression: Content) -> Text where Content: StringProtocol {
-        Text(String(expression))
-    }
 
     /// Builds an empty component from a block containing no statements.
     static func buildBlock() -> EmptyView {

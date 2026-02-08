@@ -1,6 +1,6 @@
 import UIKit
 
-struct Text: RepresentableNode {
+struct Label: RepresentableNode {
     private let text: () -> String
 
     init(_ text: @autoclosure @escaping () -> String) {

@@ -5,10 +5,6 @@ extension RepresentableNode {
     func with(_ proxy: @escaping (Self.Representable) -> Void) -> Modifier<Self> {
         Modifier(self, reactive: false, proxy)
     }
-
-    func padding(_ value: CGFloat) -> Padding<Self> {
-        Padding(value, { self })
-    }
 }
 
 // MARK: - Layer modifiers
