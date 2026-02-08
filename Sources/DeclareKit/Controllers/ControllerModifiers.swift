@@ -29,6 +29,9 @@ extension RepresentableController {
     func title(_ title: String) -> some RepresentableController {
         ModifiedController(content: self) { $0.title = title }
     }
+}
+
+extension RepresentableController {
 
     func tabBarItem(_ tabBarItem: UITabBarItem) -> some RepresentableController {
         ModifiedController(content: self, modifier: { $0.tabBarItem = tabBarItem })

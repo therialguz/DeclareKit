@@ -34,10 +34,37 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
     }
 }
 
+struct Counter: Component {
+    
+    var count: Int
+    var increaseCount: () -> Void
+    
+    var body: some RepresentableNode {
+        Button("Increase Count (\(count))", action: {
+            increaseCount()
+            print("Increasing count from button: \(count)")
+        })
+    }
+}
+
+struct CounterViewScreen: Screen {
+    @State var count = 0
+    
+    var body: some RepresentableController {
+        ViewController {
+            Counter(count: count, increaseCount: {
+                count += 1
+                print("Increasing button from screen: \(count)")
+            })
+        }
+        .title("Counter (\(count))")
+    }
+}
+
 #Preview {
     TabBarController {
         NavigationController {
-            
+            CounterViewScreen()
         }
         .tabBarItem(title: "Home", systemImage: "house.fill")
         

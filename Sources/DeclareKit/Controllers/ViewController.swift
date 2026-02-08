@@ -45,6 +45,7 @@ final class HostViewController<Content: RepresentableNode>: UIViewController {
         super.viewDidLoad()
 
         let views = content().buildList()
+        
         for child in views {
             self.view.addSubview(child)
             NSLayoutConstraint.activate([
