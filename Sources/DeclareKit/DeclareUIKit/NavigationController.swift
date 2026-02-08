@@ -12,17 +12,16 @@ import UIKit
 /// NavigationController takes RepresentableNode content (views) and wraps them
 /// in a UINavigationController. Internally, it creates a HostViewController to
 /// host the view content, which is then set as the root view controller.
-struct NavigationController<Content: RepresentableNode>: RepresentableController {
+struct NavigationController<Content: RepresentableController>: RepresentableController {
     private let content: Content
 
-    init(@NodeBuilder _ content: () -> Content) {
+    init(@ControllerBuilder _ content: () -> Content) {
         self.content = content()
     }
 
     func buildController(in context: BuildContext) -> UIViewController {
-        // Create a host view controller to contain the view content
-        let hostVC = HostViewController(content: content)
-        return UINavigationController(rootViewController: hostVC)
+        let rootViewController = content.buildController(in: context)
+        return UINavigationController(rootViewController: rootViewController)
     }
 }
 
@@ -95,6 +94,10 @@ private struct ModifiedController<Content: RepresentableController>: Representab
 }
 
 extension RepresentableController {
+    func title(_ title: String) -> some RepresentableController {
+        ModifiedController(content: self) { $0.title = title }
+    }
+    
     /// Sets the tab bar item title only.
     ///
     /// Use this modifier on view controllers that will be displayed in a TabBarController.
@@ -204,8 +207,11 @@ extension RepresentableController {
 #Preview {
     TabBarController {
         NavigationController {
-            Text("Home Content")
-                .navigationTitle("Home")
+            ViewController {
+                Text("Home Content")
+                    .navigationTitle("Inner")
+            }
+            .title("Outer")
         }
         .tabItem(title: "Home", systemImage: "house")
 
