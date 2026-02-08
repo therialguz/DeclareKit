@@ -8,18 +8,18 @@ import UIKit
 @MainActor
 protocol RepresentableController {
     /// Builds and returns a single UIViewController representing this controller node.
-    func buildController(in context: BuildContext) -> UIViewController
+    func buildController() -> UIViewController
 
     /// Builds and returns an array of UIViewControllers.
     ///
     /// Most types return a single controller. Types like _TupleController return multiple.
-    func buildControllerList(in context: BuildContext) -> [UIViewController]
+    func buildControllerList() -> [UIViewController]
 }
 
 extension RepresentableController {
     /// Default implementation returns a single controller in an array.
-    func buildControllerList(in context: BuildContext) -> [UIViewController] {
-        [buildController(in: context)]
+    func buildControllerList() -> [UIViewController] {
+        [buildController()]
     }
 
     /// Creates a preview UIViewController for Xcode previews.
@@ -35,6 +35,6 @@ extension RepresentableController {
     /// }
     /// ```
     func preview() -> UIViewController {
-        buildController(in: BuildContext())
+        buildController()
     }
 }

@@ -11,21 +11,21 @@ enum _ConditionalController<
     case first(TrueController)
     case second(FalseController)
 
-    func buildController(in context: BuildContext) -> UIViewController {
+    func buildController() -> UIViewController {
         switch self {
         case .first(let controller):
-            return controller.buildController(in: context)
+            return controller.buildController()
         case .second(let controller):
-            return controller.buildController(in: context)
+            return controller.buildController()
         }
     }
 
-    func buildControllerList(in context: BuildContext) -> [UIViewController] {
+    func buildControllerList() -> [UIViewController] {
         switch self {
         case .first(let controller):
-            return controller.buildControllerList(in: context)
+            return controller.buildControllerList()
         case .second(let controller):
-            return controller.buildControllerList(in: context)
+            return controller.buildControllerList()
         }
     }
 }

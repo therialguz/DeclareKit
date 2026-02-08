@@ -1,63 +1,4 @@
-//
-//  NavigationController.swift
-//  DeclareKit
-//
-//  Created by Benjamín Guzmán López on 07-02-26.
-//
-
 import UIKit
-
-/// A navigation controller that wraps view content.
-///
-/// NavigationController takes RepresentableNode content (views) and wraps them
-/// in a UINavigationController. Internally, it creates a HostViewController to
-/// host the view content, which is then set as the root view controller.
-struct NavigationController<Content: RepresentableController>: RepresentableController {
-    private let content: Content
-
-    init(@ControllerBuilder _ content: () -> Content) {
-        self.content = content()
-    }
-
-    func buildController(in context: BuildContext) -> UIViewController {
-        let rootViewController = content.buildController(in: context)
-        return UINavigationController(rootViewController: rootViewController)
-    }
-}
-
-/// A tab bar controller that manages multiple view controllers.
-///
-/// TabBarController takes RepresentableController content and displays them in a tab bar interface.
-/// Each child controller should use view modifiers like `.tabItem(title:image:)` to configure its tab.
-///
-/// Example:
-/// ```swift
-/// TabBarController {
-///     NavigationController {
-///         Text("Home Content")
-///     }
-///     .tabItem(title: "Home", systemImage: "house")
-///
-///     ViewController {
-///         Text("Settings Content")
-///     }
-///     .tabItem(title: "Settings", systemImage: "gear")
-///     .tabBadge("3")
-/// }
-/// ```
-struct TabBarController<Content: RepresentableController>: RepresentableController {
-    private let content: Content
-
-    init(@ControllerBuilder _ content: () -> Content) {
-        self.content = content()
-    }
-
-    func buildController(in context: BuildContext) -> UIViewController {
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = content.buildControllerList(in: context)
-        return tabBarController
-    }
-}
 
 // MARK: - View Controller Modifiers
 
@@ -71,14 +12,14 @@ private struct ModifiedController<Content: RepresentableController>: Representab
         self.modifier = modifier
     }
 
-    func buildController(in context: BuildContext) -> UIViewController {
-        let controller = content.buildController(in: context)
+    func buildController() -> UIViewController {
+        let controller = content.buildController()
         modifier(controller)
         return controller
     }
 
-    func buildControllerList(in context: BuildContext) -> [UIViewController] {
-        let controllers = content.buildControllerList(in: context)
+    func buildControllerList() -> [UIViewController] {
+        let controllers = content.buildControllerList()
         controllers.forEach { modifier($0) }
         return controllers
     }
@@ -88,11 +29,11 @@ extension RepresentableController {
     func title(_ title: String) -> some RepresentableController {
         ModifiedController(content: self) { $0.title = title }
     }
-    
+
     func tabBarItem(_ tabBarItem: UITabBarItem) -> some RepresentableController {
         ModifiedController(content: self, modifier: { $0.tabBarItem = tabBarItem })
     }
-    
+
     /// Sets the tab bar item title only.
     ///
     /// Use this modifier on view controllers that will be displayed in a TabBarController.
@@ -196,61 +137,5 @@ extension RepresentableController {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.accessibilityHint = hint
         }
-    }
-}
-
-#Preview {
-    TabBarController {
-        NavigationController {
-            ViewController {
-                Text("Home Content")
-            }
-            .title("Outer")
-        }
-        .tabItem(title: "Home", systemImage: "house")
-
-        ViewController {
-            Text("Settings Content")
-        }
-        .tabItem(title: "Settings", systemImage: "gear")
-        .tabBadge("Chuta como estas, esto es tan bacan!!")
-        
-        CustomViewController()
-    }
-    .preview()
-}
-
-struct CustomViewController: RepresentableController {
-    @State var count = 0
-
-    @ControllerBuilder
-    var body: some RepresentableController {
-        NavigationController {
-            ViewController {
-                Stack(.vertical, spacing: 16, alignment: .center) {
-                    Text("Count: \(self.count)")
-                        .font(.systemFont(ofSize: 32, weight: .bold))
-                        .textColor(self.count % 2 == 0 ? .systemBlue : .systemRed)
-
-                    Button("Increment (\(self.count))") {
-                        count += 1
-                    }
-                    .backgroundColor(self.count % 2 == 0 ? UIColor.systemGreen : UIColor.systemOrange)
-                    .cornerRadius(8)
-
-                    Show(when: self.count % 3 == 0) {
-                        Text("You reached 3!")
-                            .textColor(.systemGreen)
-                            .font(.systemFont(ofSize: 18, weight: .medium))
-                    }
-                }
-            }
-            .title("Reactive Demo")
-        }
-        .tabItem(title: "Counter", systemImage: "plus")
-    }
-
-    func buildController(in context: BuildContext) -> UIViewController {
-        body.buildController(in: context)
     }
 }

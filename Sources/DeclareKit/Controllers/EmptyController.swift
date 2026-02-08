@@ -8,30 +8,30 @@ import UIKit
 struct EmptyController: RepresentableController {
     init() {}
     
-    func buildController(in context: BuildContext) -> UIViewController {
+    func buildController() -> UIViewController {
         UIViewController()
     }
     
-    func buildControllerList(in context: BuildContext) -> [UIViewController] {
+    func buildControllerList() -> [UIViewController] {
         []
     }
 }
 
 /// Make Optional conform to RepresentableController when wrapped type conforms.
 extension Optional: RepresentableController where Wrapped: RepresentableController {
-    func buildController(in context: BuildContext) -> UIViewController {
+    func buildController() -> UIViewController {
         switch self {
         case .some(let controller):
-            return controller.buildController(in: context)
+            return controller.buildController()
         case .none:
-            return EmptyController().buildController(in: context)
+            return EmptyController().buildController()
         }
     }
     
-    func buildControllerList(in context: BuildContext) -> [UIViewController] {
+    func buildControllerList() -> [UIViewController] {
         switch self {
         case .some(let controller):
-            return controller.buildControllerList(in: context)
+            return controller.buildControllerList()
         case .none:
             return []
         }

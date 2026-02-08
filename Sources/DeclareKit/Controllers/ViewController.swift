@@ -22,7 +22,7 @@ struct ViewController<Content: RepresentableNode>: RepresentableController {
         self.content = content
     }
     
-    func buildController(in context: BuildContext) -> UIViewController {
+    func buildController() -> UIViewController {
         HostViewController(content: content)
     }
 }
