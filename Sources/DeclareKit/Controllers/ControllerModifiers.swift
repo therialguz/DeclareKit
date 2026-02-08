@@ -6,28 +6,46 @@ import UIKit
 private struct ModifiedController<Content: RepresentableController>: RepresentableController {
     private let content: Content
     private let modifier: (UIViewController) -> Void
+    private let reactive: Bool
 
-    init(content: Content, modifier: @escaping (UIViewController) -> Void) {
+    init(
+        content: Content,
+        reactive: Bool = true,
+        modifier: @escaping (UIViewController) -> Void
+    ) {
         self.content = content
         self.modifier = modifier
+        self.reactive = reactive
     }
 
     func buildController() -> UIViewController {
         let controller = content.buildController()
-        modifier(controller)
+        applyModifier(to: controller)
         return controller
     }
 
     func buildControllerList() -> [UIViewController] {
         let controllers = content.buildControllerList()
-        controllers.forEach { modifier($0) }
+        controllers.forEach { applyModifier(to: $0) }
         return controllers
+    }
+
+    private func applyModifier(to controller: UIViewController) {
+        if reactive {
+            createEffect { [weak controller] in
+                guard let controller else { return }
+                modifier(controller)
+            }
+            return
+        }
+
+        modifier(controller)
     }
 }
 
 extension RepresentableController {
-    func title(_ title: String) -> some RepresentableController {
-        ModifiedController(content: self) { $0.title = title }
+    func title(_ title: @autoclosure @escaping () -> String) -> some RepresentableController {
+        ModifiedController(content: self) { $0.title = title() }
     }
 }
 

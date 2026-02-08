@@ -35,8 +35,7 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
 }
 
 struct Counter: Component {
-    
-    var count: Int
+    @Prop var count: Int
     var increaseCount: () -> Void
     
     var body: some RepresentableNode {

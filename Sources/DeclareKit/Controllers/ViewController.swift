@@ -45,14 +45,13 @@ final class HostViewController<Content: RepresentableNode>: UIViewController {
         super.viewDidLoad()
 
         let views = content().buildList()
-        
         for child in views {
-            self.view.addSubview(child)
+            view.addSubview(child)
             NSLayoutConstraint.activate([
-                child.topAnchor.constraint(equalTo: self.view.topAnchor),
-                child.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                child.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                child.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+                child.topAnchor.constraint(equalTo: view.topAnchor),
+                child.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                child.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                child.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             ])
         }
     }
