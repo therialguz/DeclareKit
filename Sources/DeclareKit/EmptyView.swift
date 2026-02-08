@@ -8,7 +8,7 @@
 import UIKit
 
 struct EmptyView: RepresentableNode {
-    func build(in context: BuildContext) -> some UIView {
+    func build() -> some UIView {
         UIView()
     }
 }

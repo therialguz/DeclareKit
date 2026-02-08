@@ -23,16 +23,16 @@ struct ViewController<Content: RepresentableNode>: RepresentableController {
     }
     
     func buildController(in context: BuildContext) -> UIViewController {
-        HostViewController(content: content())
+        HostViewController(content: content)
     }
 }
 
 /// Internal UIViewController that hosts RepresentableNode content.
 @MainActor
 final class HostViewController<Content: RepresentableNode>: UIViewController {
-    private let content: Content
+    private let content: () -> Content
     
-    init(content: Content) {
+    init(content: @escaping () -> Content) {
         self.content = content
         super.init(nibName: nil, bundle: nil)
     }
@@ -43,31 +43,15 @@ final class HostViewController<Content: RepresentableNode>: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let context = BuildContext(parentViewController: self)
-        let views = content.buildList(in: context)
-        
-        // If single view, add it directly
-        if views.count == 1, let singleView = views.first {
-            view.addSubview(singleView)
+
+        let views = content().buildList()
+        for child in views {
+            self.view.addSubview(child)
             NSLayoutConstraint.activate([
-                singleView.topAnchor.constraint(equalTo: view.topAnchor),
-                singleView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                singleView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                singleView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
-        } else {
-            // Multiple views: stack them vertically
-            let stackView = UIStackView(arrangedSubviews: views)
-            stackView.axis = .vertical
-            stackView.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(stackView)
-            
-            NSLayoutConstraint.activate([
-                stackView.topAnchor.constraint(equalTo: view.topAnchor),
-                stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                child.topAnchor.constraint(equalTo: self.view.topAnchor),
+                child.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                child.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                child.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
             ])
         }
     }

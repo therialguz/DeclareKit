@@ -17,12 +17,12 @@ struct _ConditionalNode<TrueContent: RepresentableNode, FalseContent: Representa
 
     let storage: Storage
 
-    func build(in context: BuildContext) -> UIView {
+    func build() -> UIView {
         switch storage {
         case .trueContent(let trueContent):
-            trueContent.build(in: context)
+            trueContent.build()
         case .falseContent(let falseContent):
-            falseContent.build(in: context)
+            falseContent.build()
         }
     }
 }

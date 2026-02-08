@@ -13,14 +13,14 @@ import UIKit
 protocol RepresentableNode {
     associatedtype Representable: UIView
 
-    func build(in context: BuildContext) -> Representable
+    func build() -> Representable
 
-    func buildList(in context: BuildContext) -> [UIView]
+    func buildList() -> [UIView]
 }
 
 extension RepresentableNode {
-    func buildList(in context: BuildContext) -> [UIView] {
-        [build(in: context)]
+    func buildList() -> [UIView] {
+        [build()]
     }
 }
 
@@ -31,17 +31,20 @@ extension RepresentableNode {
 //}
 
 struct Text: RepresentableNode {
-    private let text: String
+    private let text: () -> String
 
-    init(_ text: String) {
+    init(_ text: @autoclosure @escaping () -> String) {
         self.text = text
     }
 
-    func build(in context: BuildContext) -> UILabel {
-        let view = UILabel()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.text = text
-        return view
+    func build() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        createEffect { [weak label] in
+            guard let label else { return }
+            label.text = self.text()
+        }
+        return label
     }
 }
 
@@ -58,7 +61,7 @@ extension RepresentableNode {
     //        return self
     //    }
 
-    func with(_ proxy: @escaping (Self.Representable, BuildContext) -> Void) -> Modifier<Self> {
+    func with(_ proxy: @escaping (Self.Representable) -> Void) -> Modifier<Self> {
         Modifier(self, proxy)
     }
 
@@ -69,95 +72,156 @@ extension RepresentableNode {
 
 // MARK: - Layer modifiers
 extension RepresentableNode {
-    func backgroundColor(_ color: CGColor) -> some RepresentableNode {
-        Modifier(self, { view, _ in view.layer.backgroundColor = color })
+    func backgroundColor(_ color: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.backgroundColor = color()
+            }
+        }
     }
 
-    func backgroundColor(_ color: UIColor) -> some RepresentableNode {
-        backgroundColor(color.cgColor)
+    func backgroundColor(_ color: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.backgroundColor = color().cgColor
+            }
+        }
     }
 
-    func cornerRadius(_ radius: CGFloat) -> some RepresentableNode {
-        Modifier(self, { view, _ in view.layer.cornerRadius = radius })
+    func cornerRadius(_ radius: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.cornerRadius = radius()
+            }
+        }
     }
 
-    func borderWidth(_ width: CGFloat) -> some RepresentableNode {
-        Modifier(self, { view, _ in view.layer.borderWidth = width })
+    func borderWidth(_ width: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.borderWidth = width()
+            }
+        }
     }
 
-    func borderColor(_ color: CGColor) -> some RepresentableNode {
-        Modifier(self, { view, _ in view.layer.borderColor = color })
+    func borderColor(_ color: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.borderColor = color()
+            }
+        }
     }
 
-    func borderColor(_ color: UIColor) -> some RepresentableNode {
-        borderColor(color.cgColor)
+    func borderColor(_ color: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.layer.borderColor = color().cgColor
+            }
+        }
+    }
+
+    func alpha(_ value: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.alpha = value()
+            }
+        }
+    }
+
+    func isHidden(_ hidden: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                view.isHidden = hidden()
+            }
+        }
+    }
+
+    /// Escape hatch for custom reactive bindings on the built UIView.
+    func withEffect(_ effect: @escaping (Self.Representable) -> Void) -> Modifier<Self> {
+        Modifier(self) { view in
+            createEffect { [weak view] in
+                guard let view else { return }
+                effect(view)
+            }
+        }
     }
 }
 
 // MARK: - UILabel modifiers
 extension RepresentableNode where Representable == UILabel {
-    func textColor(_ color: UIColor) -> Modifier<Self> {
-        Modifier(self, { view, _ in view.textColor = color })
+    func textColor(_ color: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { label in
+            createEffect { [weak label] in
+                guard let label else { return }
+                label.textColor = color()
+            }
+        }
     }
 
-    func font(_ font: UIFont) -> Modifier<Self> {
-        Modifier(self, { view, _ in view.font = font })
+    func font(_ font: @autoclosure @escaping () -> UIFont) -> Modifier<Self> {
+        Modifier(self) { label in
+            createEffect { [weak label] in
+                guard let label else { return }
+                label.font = font()
+            }
+        }
     }
 
-    func numberOfLines(_ numberOfLinesz: Int) -> Modifier<Self> {
-        Modifier(self, { view, _ in view.numberOfLines = numberOfLinesz })
+    func numberOfLines(_ lines: @autoclosure @escaping () -> Int) -> Modifier<Self> {
+        Modifier(self) { label in
+            createEffect { [weak label] in
+                guard let label else { return }
+                label.numberOfLines = lines()
+            }
+        }
     }
 }
 
 struct Modifier<ModifiedNode: RepresentableNode>: RepresentableNode {
     private let node: ModifiedNode
-    private let modifier: (ModifiedNode.Representable, BuildContext) -> Void
+    private let modifier: (ModifiedNode.Representable) -> Void
 
     init(
         _ node: ModifiedNode,
-        _ modifier: @escaping (ModifiedNode.Representable, BuildContext) -> Void
+        _ modifier: @escaping (ModifiedNode.Representable) -> Void
     ) {
         self.node = node
         self.modifier = modifier
     }
 
-    func build(in context: BuildContext) -> ModifiedNode.Representable {
-        let view = node.build(in: context)
-        modifier(view, context)
+    func build() -> ModifiedNode.Representable {
+        let view = node.build()
+        modifier(view)
         return view
     }
 }
 
 struct Button: RepresentableNode {
-    private let title: String
-    private let action: Action
+    private let title: () -> String
+    private let action: () -> Void
 
-    init(_ title: String, action: @escaping () -> Void) {
+    init(_ title: @autoclosure @escaping () -> String, action: @escaping () -> Void) {
         self.title = title
-        self.action = Action(action: action)
+        self.action = action
     }
 
-    func build(in context: BuildContext) -> UIView {
-        let button = UIButton()
+    func build() -> UIButton {
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(title, for: .normal)
-        button.setTitle("CHUTa!!", for: .focused)
-        button.addTarget(button, action: #selector(action.action), for: .touchUpInside)
+        button.addAction(UIAction { _ in action() }, for: .touchUpInside)
+        createEffect { [weak button] in
+            guard let button else { return }
+            button.setTitle(self.title(), for: .normal)
+        }
         return button
-    }
-
-    final class Action: NSObject {
-
-        private let _action: () -> Void
-
-        init(action: @escaping () -> Void) {
-            _action = action
-            super.init()
-        }
-
-        @objc func action() {
-            _action()
-        }
     }
 }
 
@@ -175,8 +239,8 @@ struct Padding<NodeContent: RepresentableNode>: RepresentableNode {
         self.content = content()
     }
 
-    func build(in context: BuildContext) -> UIView {
-        let child = content.build(in: context)
+    func build() -> UIView {
+        let child = content.build()
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
@@ -213,8 +277,8 @@ struct Stack<Content: RepresentableNode>: RepresentableNode {
         self.content = content()
     }
 
-    func build(in context: BuildContext) -> UIStackView {
-        let children = content.buildList(in: context)
+    func build() -> UIStackView {
+        let children = content.buildList()
         print("Children: \(children.count)")
         let stack = UIStackView(arrangedSubviews: children)
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -227,15 +291,16 @@ struct Stack<Content: RepresentableNode>: RepresentableNode {
     }
 }
 
-// MARK: - UILabel modifiers
+// MARK: - UIStackView modifiers
 extension RepresentableNode where Representable == UIStackView {
-    func margins(_ insets: UIEdgeInsets) -> Modifier<Self> {
-        Modifier(
-            self,
-            { view, _ in
-                view.layoutMargins = insets
-                view.isLayoutMarginsRelativeArrangement = true
-            })
+    func margins(_ insets: @autoclosure @escaping () -> UIEdgeInsets) -> Modifier<Self> {
+        Modifier(self) { stack in
+            createEffect { [weak stack] in
+                guard let stack else { return }
+                stack.layoutMargins = insets()
+                stack.isLayoutMarginsRelativeArrangement = true
+            }
+        }
     }
 }
 

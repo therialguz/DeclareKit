@@ -59,15 +59,6 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
     }
 }
 
-extension RepresentableNode {
-    /// Sets the navigation title for this view.
-    ///
-    /// This modifier updates the navigation item title of the parent view controller.
-    func navigationTitle(_ title: String) -> Modifier<Self> {
-        Modifier(self, { _, context in context.parentViewController.navigationItem.title = title })
-    }
-}
-
 // MARK: - View Controller Modifiers
 
 /// A modified view controller that applies a configuration closure.
@@ -98,6 +89,10 @@ extension RepresentableController {
         ModifiedController(content: self) { $0.title = title }
     }
     
+    func tabBarItem(_ tabBarItem: UITabBarItem) -> some RepresentableController {
+        ModifiedController(content: self, modifier: { $0.tabBarItem = tabBarItem })
+    }
+    
     /// Sets the tab bar item title only.
     ///
     /// Use this modifier on view controllers that will be displayed in a TabBarController.
@@ -109,7 +104,7 @@ extension RepresentableController {
     /// ```
     func tabItem(title: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem = UITabBarItem(title: title, image: nil, tag: 0)
+            vc.tabBarItem.title = title
         }
     }
 
@@ -124,8 +119,8 @@ extension RepresentableController {
     /// ```
     func tabItem(title: String, systemImage: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
-            vc.tabBarItem = UITabBarItem(
-                title: title, image: UIImage(systemName: systemImage), tag: 0)
+            vc.tabBarItem.title = title
+            vc.tabBarItem.image = UIImage(systemName: systemImage)
         }
     }
 
@@ -209,7 +204,6 @@ extension RepresentableController {
         NavigationController {
             ViewController {
                 Text("Home Content")
-                    .navigationTitle("Inner")
             }
             .title("Outer")
         }
@@ -220,6 +214,43 @@ extension RepresentableController {
         }
         .tabItem(title: "Settings", systemImage: "gear")
         .tabBadge("Chuta como estas, esto es tan bacan!!")
+        
+        CustomViewController()
     }
     .preview()
+}
+
+struct CustomViewController: RepresentableController {
+    @State var count = 0
+
+    @ControllerBuilder
+    var body: some RepresentableController {
+        NavigationController {
+            ViewController {
+                Stack(.vertical, spacing: 16, alignment: .center) {
+                    Text("Count: \(self.count)")
+                        .font(.systemFont(ofSize: 32, weight: .bold))
+                        .textColor(self.count % 2 == 0 ? .systemBlue : .systemRed)
+
+                    Button("Increment (\(self.count))") {
+                        count += 1
+                    }
+                    .backgroundColor(self.count % 2 == 0 ? UIColor.systemGreen : UIColor.systemOrange)
+                    .cornerRadius(8)
+
+                    Show(when: self.count % 3 == 0) {
+                        Text("You reached 3!")
+                            .textColor(.systemGreen)
+                            .font(.systemFont(ofSize: 18, weight: .medium))
+                    }
+                }
+            }
+            .title("Reactive Demo")
+        }
+        .tabItem(title: "Counter", systemImage: "plus")
+    }
+
+    func buildController(in context: BuildContext) -> UIViewController {
+        body.buildController(in: context)
+    }
 }

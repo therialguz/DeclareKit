@@ -31,16 +31,16 @@ class ExampleViewController: UIViewController {
         }
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.isEnabled = false
-        button.setTitle("Hello World", for: .normal)
-        button.setTitle("Disabled", for: .disabled)
+//        button.isEnabled = false
+//        button.setTitle("Hello World", for: .normal)
+//        button.setTitle("Disabled", for: .disabled)
         button.setTitleColor(.black, for: .normal)
         
         print("Button: \(button)")
         
         view.addSubview(button)
         
-        let label = Text("Chuta").build(in: BuildContext(parentViewController: self))
+        let label = Text("Chuta").build()
         track {
             label.text = "Count: \(self.count)"
         }
