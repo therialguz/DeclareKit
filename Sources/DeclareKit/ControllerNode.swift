@@ -27,8 +27,9 @@ extension RepresentableController {
     /// Example:
     /// ```swift
     /// #Preview {
-    ///     TabController {
-    ///         Tab("Home") { HomeView() }
+    ///     TabBarController {
+    ///         NavigationController { HomeView() }
+    ///             .tabItem(title: "Home", systemImage: "house")
     ///     }
     ///     .preview()
     /// }

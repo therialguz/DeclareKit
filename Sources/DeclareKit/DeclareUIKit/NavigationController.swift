@@ -26,39 +26,27 @@ struct NavigationController<Content: RepresentableNode>: RepresentableController
     }
 }
 
-/// A tab in a tab bar controller.
+/// A tab bar controller that manages multiple view controllers.
 ///
-/// Tab represents a single tab and takes a RepresentableController as its content.
-/// For view-only tabs, wrap content in `ViewController { ... }`.
-struct Tab<Content: RepresentableController>: RepresentableController {
-    private let title: String
-    private let image: UIImage?
-    private let content: Content
-
-    init(_ title: String, systemImage: String, @ControllerBuilder _ content: () -> Content) {
-        self.title = title
-        self.image = UIImage(systemName: systemImage)
-        self.content = content()
-    }
-
-    init(_ title: String, image: UIImage? = nil, @ControllerBuilder _ content: () -> Content) {
-        self.title = title
-        self.image = image
-        self.content = content()
-    }
-
-    func buildController(in context: BuildContext) -> UIViewController {
-        let vc = content.buildController(in: context)
-        vc.tabBarItem = UITabBarItem(title: title, image: image, selectedImage: nil)
-        return vc
-    }
-}
-
-/// A tab bar controller that manages multiple tabs.
+/// TabBarController takes RepresentableController content and displays them in a tab bar interface.
+/// Each child controller should use view modifiers like `.tabItem(title:image:)` to configure its tab.
 ///
-/// TabController takes RepresentableController content (controllers) and displays
-/// them in a tab bar interface. Each child must conform to RepresentableController.
-struct TabController<Content: RepresentableController>: RepresentableController {
+/// Example:
+/// ```swift
+/// TabBarController {
+///     NavigationController {
+///         Text("Home Content")
+///     }
+///     .tabItem(title: "Home", systemImage: "house")
+///
+///     ViewController {
+///         Text("Settings Content")
+///     }
+///     .tabItem(title: "Settings", systemImage: "gear")
+///     .tabBadge("3")
+/// }
+/// ```
+struct TabBarController<Content: RepresentableController>: RepresentableController {
     private let content: Content
 
     init(@ControllerBuilder _ content: () -> Content) {
@@ -81,20 +69,151 @@ extension RepresentableNode {
     }
 }
 
-#Preview {
-    TabController {
-        Tab("Home", systemImage: "house") {
-            NavigationController {
-                Text("Home Content")
-                    .navigationTitle("Home")
-            }
-        }
+// MARK: - View Controller Modifiers
 
-        Tab("Settings", systemImage: "gear") {
-            ViewController {
-                Text("Settings Content")
-            }
+/// A modified view controller that applies a configuration closure.
+private struct ModifiedController<Content: RepresentableController>: RepresentableController {
+    private let content: Content
+    private let modifier: (UIViewController) -> Void
+
+    init(content: Content, modifier: @escaping (UIViewController) -> Void) {
+        self.content = content
+        self.modifier = modifier
+    }
+
+    func buildController(in context: BuildContext) -> UIViewController {
+        let controller = content.buildController(in: context)
+        modifier(controller)
+        return controller
+    }
+
+    func buildControllerList(in context: BuildContext) -> [UIViewController] {
+        let controllers = content.buildControllerList(in: context)
+        controllers.forEach { modifier($0) }
+        return controllers
+    }
+}
+
+extension RepresentableController {
+    /// Sets the tab bar item title only.
+    ///
+    /// Use this modifier on view controllers that will be displayed in a TabBarController.
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Settings")
+    /// ```
+    func tabItem(title: String) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem = UITabBarItem(title: title, image: nil, tag: 0)
         }
+    }
+
+    /// Sets the tab bar item with a title and system image.
+    ///
+    /// Use this modifier on view controllers that will be displayed in a TabBarController.
+    ///
+    /// Example:
+    /// ```swift
+    /// NavigationController { ... }
+    ///     .tabItem(title: "Home", systemImage: "house")
+    /// ```
+    func tabItem(title: String, systemImage: String) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem = UITabBarItem(
+                title: title, image: UIImage(systemName: systemImage), tag: 0)
+        }
+    }
+
+    /// Sets the tab bar item with a title and custom image.
+    ///
+    /// Use this modifier on view controllers that will be displayed in a TabBarController.
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Profile", image: myCustomImage)
+    /// ```
+    func tabItem(title: String, image: UIImage?) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem = UITabBarItem(title: title, image: image, tag: 0)
+        }
+    }
+
+    /// Sets the tab bar item badge value.
+    ///
+    /// The badge appears as a red circle with the specified text on the tab bar item.
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Messages", systemImage: "message")
+    ///     .tabBadge("5")
+    /// ```
+    func tabBadge(_ value: String?) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem?.badgeValue = value
+        }
+    }
+
+    /// Sets the tab bar item badge color (iOS 10+).
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Notifications", systemImage: "bell")
+    ///     .tabBadge("3")
+    ///     .tabBadgeColor(.systemBlue)
+    /// ```
+    func tabBadgeColor(_ color: UIColor) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem?.badgeColor = color
+        }
+    }
+
+    /// Sets the accessibility label for the tab bar item.
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Settings", systemImage: "gear")
+    ///     .tabAccessibilityLabel("Settings Tab")
+    /// ```
+    func tabAccessibilityLabel(_ label: String) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem?.accessibilityLabel = label
+        }
+    }
+
+    /// Sets the accessibility hint for the tab bar item.
+    ///
+    /// Example:
+    /// ```swift
+    /// ViewController { ... }
+    ///     .tabItem(title: "Profile", systemImage: "person")
+    ///     .tabAccessibilityHint("Double tap to view your profile")
+    /// ```
+    func tabAccessibilityHint(_ hint: String) -> some RepresentableController {
+        ModifiedController(content: self) { vc in
+            vc.tabBarItem?.accessibilityHint = hint
+        }
+    }
+}
+
+#Preview {
+    TabBarController {
+        NavigationController {
+            Text("Home Content")
+                .navigationTitle("Home")
+        }
+        .tabItem(title: "Home", systemImage: "house")
+
+        ViewController {
+            Text("Settings Content")
+        }
+        .tabItem(title: "Settings", systemImage: "gear")
+        .tabBadge("Chuta como estas, esto es tan bacan!!")
     }
     .preview()
 }
