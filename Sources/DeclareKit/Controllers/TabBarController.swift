@@ -38,26 +38,28 @@ import SwiftUI
 
 struct Counter: Component {
     @Binding var count: Int
-    var increaseCount: () -> Void
     
     var body: some RepresentableNode {
         Button("Increase Count (\(count))", action: {
-            increaseCount()
+            count += 1
             print("Increasing count from button: \(count)")
         })
     }
 }
 
-
 struct CounterViewScreen: Screen {
-    @Signal var count: Int = 0
+    @Signal var count: Int = 5
     
     var body: some RepresentableController {
         ViewController {
-            Counter(count: $count, increaseCount: {
-                count += 1
-                print("Increasing button from screen: \(count)")
-            })
+            SafeAreaView {
+                Stack(.vertical) {
+                    Counter(count: $count)
+                        .backgroundColor(.orange)
+                }
+                .backgroundColor(.blue)
+            }
+            .backgroundColor(.red)
         }
         .title("Counter (\(count))")
     }

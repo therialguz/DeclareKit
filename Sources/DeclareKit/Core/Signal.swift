@@ -32,15 +32,5 @@ struct Signal<T> {
     init(wrappedValue: T) {
         self.storage = SignalStorage(value: wrappedValue)
     }
-
-    /// Reuses an existing signal storage (for child components receiving `$count`).
-    init(projectedValue: Signal<T>) {
-        self.storage = projectedValue.storage
-    }
-
-    /// Solid-style accessor convenience: `count()`.
-    func callAsFunction() -> T {
-        wrappedValue
-    }
 }
 
