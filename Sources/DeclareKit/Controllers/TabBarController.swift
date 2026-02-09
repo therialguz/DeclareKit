@@ -34,8 +34,10 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
     }
 }
 
+import SwiftUI
+
 struct Counter: Component {
-    @Prop var count: Int
+    @Binding var count: Int
     var increaseCount: () -> Void
     
     var body: some RepresentableNode {
@@ -46,12 +48,13 @@ struct Counter: Component {
     }
 }
 
+
 struct CounterViewScreen: Screen {
-    @State var count = 0
+    @Signal var count: Int = 0
     
     var body: some RepresentableController {
         ViewController {
-            Counter(count: count, increaseCount: {
+            Counter(count: $count, increaseCount: {
                 count += 1
                 print("Increasing button from screen: \(count)")
             })
