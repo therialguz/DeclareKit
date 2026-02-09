@@ -28,9 +28,39 @@ struct TabBarController<Content: RepresentableController>: RepresentableControll
     }
 
     func buildController() -> UIViewController {
-        let tabBarController = UITabBarController()
+        let tabBarController = DKTabBarController()
         tabBarController.viewControllers = content.buildControllerList()
         return tabBarController
+    }
+}
+
+@MainActor
+final class DKTabBarController: UITabBarController, LifecycleRegistrable {
+    let lifecycleCallbacks = LifecycleCallbacks()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        lifecycleCallbacks.viewDidLoad?()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        lifecycleCallbacks.viewWillAppear?(animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        lifecycleCallbacks.viewDidAppear?(animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        lifecycleCallbacks.viewWillDisappear?(animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        lifecycleCallbacks.viewDidDisappear?(animated)
     }
 }
 
@@ -65,6 +95,11 @@ struct CounterViewScreen: Screen {
             .backgroundColor(.red)
         }
         .title("Counter (\(count))")
+        .viewDidLoad({ print("viewDidLoad") })
+        .viewWillAppear({ print("viewWillAppear") })
+        .viewDidAppear({ print("viewDidAppear") })
+        .viewWillDisappear({ print("viewWillAppear") })
+        .viewDidDisappear({ print("viewDidDisappear") })
     }
 }
 

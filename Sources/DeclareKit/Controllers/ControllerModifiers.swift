@@ -3,7 +3,7 @@ import UIKit
 // MARK: - View Controller Modifiers
 
 /// A modified view controller that applies a configuration closure.
-private struct ModifiedController<Content: RepresentableController>: RepresentableController {
+struct ModifiedController<Content: RepresentableController>: RepresentableController {
     private let content: Content
     private let modifier: (UIViewController) -> Void
     private let reactive: Bool
@@ -157,6 +157,64 @@ extension RepresentableController {
     func tabBarItem(accessibilityHint: String) -> some RepresentableController {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.accessibilityHint = accessibilityHint
+        }
+    }
+}
+
+// MARK: - Lifecycle Modifiers
+
+extension RepresentableController {
+    func viewDidLoad(_ callback: @escaping () -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewDidLoad = callback
+        }
+    }
+
+    func viewWillAppear(_ callback: @escaping (_ animated: Bool) -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewWillAppear = callback
+        }
+    }
+    
+    func viewWillAppear(_ callback: @escaping () -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewWillAppear = { _ in callback() }
+        }
+    }
+
+    func viewDidAppear(_ callback: @escaping (_ animated: Bool) -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewDidAppear = callback
+        }
+    }
+    
+    func viewDidAppear(_ callback: @escaping () -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewDidAppear = { _ in callback() }
+        }
+    }
+
+    func viewWillDisappear(_ callback: @escaping (_ animated: Bool) -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewWillDisappear = callback
+        }
+    }
+    
+    func viewWillDisappear(_ callback: @escaping () -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewWillDisappear = { _ in callback() }
+        }
+    }
+
+    func viewDidDisappear(_ callback: @escaping (_ animated: Bool) -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewDidDisappear = callback
+        }
+    }
+    
+    func viewDidDisappear(_ callback: @escaping () -> Void) -> ModifiedController<Self> {
+        ModifiedController(content: self, reactive: false) { controller in
+            (controller as? LifecycleRegistrable)?.lifecycleCallbacks.viewDidDisappear = { _ in callback() }
         }
     }
 }

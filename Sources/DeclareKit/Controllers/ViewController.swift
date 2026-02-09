@@ -29,18 +29,19 @@ struct ViewController<Content: RepresentableNode>: RepresentableController {
 
 /// Internal UIViewController that hosts RepresentableNode content.
 @MainActor
-final class HostViewController<Content: RepresentableNode>: UIViewController {
+final class HostViewController<Content: RepresentableNode>: UIViewController, LifecycleRegistrable {
     private let content: () -> Content
-    
+    let lifecycleCallbacks = LifecycleCallbacks()
+
     init(content: @escaping () -> Content) {
         self.content = content
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -54,5 +55,27 @@ final class HostViewController<Content: RepresentableNode>: UIViewController {
                 child.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             ])
         }
+
+        lifecycleCallbacks.viewDidLoad?()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        lifecycleCallbacks.viewWillAppear?(animated)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        lifecycleCallbacks.viewDidAppear?(animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        lifecycleCallbacks.viewWillDisappear?(animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        lifecycleCallbacks.viewDidDisappear?(animated)
     }
 }
