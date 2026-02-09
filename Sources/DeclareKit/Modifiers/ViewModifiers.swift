@@ -8,35 +8,41 @@ extension RepresentableNode {
 
 // MARK: - Layer modifiers
 extension RepresentableNode {
-    func backgroundColor(_ color: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
-        Modifier(self) { $0.layer.backgroundColor = color() }
+    func layer(backgroundColor: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
+        Modifier(self) { $0.layer.backgroundColor = backgroundColor() }
     }
 
-    func backgroundColor(_ color: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
-        Modifier(self) { $0.layer.backgroundColor = color().cgColor }
+    func layer(backgroundColor: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { $0.layer.backgroundColor = backgroundColor().cgColor }
     }
 
-    func cornerRadius(_ radius: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
-        Modifier(self) { $0.layer.cornerRadius = radius() }
+    func layer(cornerRadius: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { $0.layer.cornerRadius = cornerRadius() }
     }
 
-    func borderWidth(_ width: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
-        Modifier(self) { $0.layer.borderWidth = width() }
+    func layer(borderWidth: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { $0.layer.borderWidth = borderWidth() }
     }
 
-    func borderColor(_ color: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
-        Modifier(self) { $0.layer.borderColor = color() }
+    func layer(borderColor: @autoclosure @escaping () -> CGColor) -> Modifier<Self> {
+        Modifier(self) { $0.layer.borderColor = borderColor() }
     }
 
-    func borderColor(_ color: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
-        Modifier(self) { $0.layer.borderColor = color().cgColor }
+    func layer(borderColor: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { $0.layer.borderColor = borderColor().cgColor }
+    }
+}
+
+extension RepresentableNode {
+    func backgroundColor(_ backgroundColor: @autoclosure @escaping () -> UIColor) -> Modifier<Self> {
+        Modifier(self) { $0.backgroundColor = backgroundColor() }
+    }
+    
+    func alpha(_ alpha: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
+        Modifier(self) { $0.alpha = alpha() }
     }
 
-    func alpha(_ value: @autoclosure @escaping () -> CGFloat) -> Modifier<Self> {
-        Modifier(self) { $0.alpha = value() }
-    }
-
-    func isHidden(_ hidden: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
-        Modifier(self) { $0.isHidden = hidden() }
+    func isHidden(_ isHidden: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.isHidden = isHidden() }
     }
 }

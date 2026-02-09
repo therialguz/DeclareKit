@@ -58,12 +58,7 @@ struct CounterViewScreen: Screen {
                 Stack(.vertical) {
                     Counter(count: $count)
                         .backgroundColor(count % 2 == 0 ? .green : .yellow)
-//                        .with { view in
-//                            UIView.animate(.default) {
-//                                view.layer.cornerRadius = count % 2 == 0 ? 10 : view.frame.width / 2
-//                                view.backgroundColor = count % 3 == 0 ? .green : .yellow
-//                            }
-//                        }
+                        .layer(cornerRadius: count % 2 == 0 ? 40 : 400)
                 }
                 .backgroundColor(.blue)
             }
