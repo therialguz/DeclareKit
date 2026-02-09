@@ -20,7 +20,13 @@ struct Modifier<ModifiedNode: RepresentableNode>: RepresentableNode {
         if reactive {
             createEffect { [weak view] in
                 guard let view else { return }
-                self.modifier(view)
+                if let animation = AnimationContext.current {
+                    animation.perform {
+                        self.modifier(view)
+                    }
+                } else {
+                    self.modifier(view)
+                }
             }
         } else {
             modifier(view)

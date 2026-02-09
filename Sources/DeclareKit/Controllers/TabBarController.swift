@@ -41,7 +41,9 @@ struct Counter: Component {
     
     var body: some RepresentableNode {
         Button("Increase Count (\(count))", action: {
-            count += 1
+            withAnimation {
+                count += 1
+            }
             print("Increasing count from button: \(count)")
         })
     }
@@ -55,7 +57,13 @@ struct CounterViewScreen: Screen {
             SafeAreaView {
                 Stack(.vertical) {
                     Counter(count: $count)
-                        .backgroundColor(.orange)
+                        .backgroundColor(count % 2 == 0 ? .green : .yellow)
+//                        .with { view in
+//                            UIView.animate(.default) {
+//                                view.layer.cornerRadius = count % 2 == 0 ? 10 : view.frame.width / 2
+//                                view.backgroundColor = count % 3 == 0 ? .green : .yellow
+//                            }
+//                        }
                 }
                 .backgroundColor(.blue)
             }
