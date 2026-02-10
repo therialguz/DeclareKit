@@ -63,6 +63,30 @@ extension RepresentableController {
     public func navigationItem(largeTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.navigationItem.largeTitle = largeTitle() }
     }
+    
+    public func navigationItem(backButtonTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.backButtonTitle = backButtonTitle() }
+    }
+    
+    public func navigationItem(rightBarButtonItem: @autoclosure @escaping () -> UIBarButtonItem?) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.rightBarButtonItem = rightBarButtonItem() }
+    }
+    
+    public func navigationItem(rightBarButtonItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.rightBarButtonItems = rightBarButtonItems() }
+    }
+    
+    public func navigationItem(leftBarButtonItem: @autoclosure @escaping () -> UIBarButtonItem?) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.leftBarButtonItem = leftBarButtonItem() }
+    }
+    
+    public func navigationItem(leftBarButtonItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.leftBarButtonItems = leftBarButtonItems() }
+    }
+    
+    public func toolbarItems(_ toolbarItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.toolbarItems = toolbarItems() }
+    }
 }
 
 extension RepresentableController {

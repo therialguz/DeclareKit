@@ -27,3 +27,14 @@ public struct Button: RepresentableNode {
         return button
     }
 }
+
+extension RepresentableNode where Representable == UIButton {
+    /// Sets layout margins and enables margin-relative arrangement.
+    public func isEnabled(_ isEnabled: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.isEnabled = isEnabled() }
+    }
+    
+    public func configuration(_ configuration: @autoclosure @escaping () -> UIButton.Configuration) -> Modifier<Self> {
+        Modifier(self) { $0.configuration = configuration() }
+    }
+}

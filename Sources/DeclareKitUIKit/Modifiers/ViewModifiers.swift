@@ -115,4 +115,24 @@ extension RepresentableNode {
     public func tag(_ tag: @autoclosure @escaping () -> Int) -> Modifier<Self> {
         Modifier(self) { $0.tag = tag() }
     }
+    
+    public func isUserInteractionEnabled(_ isUserInteractionEnabled: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.isUserInteractionEnabled = isUserInteractionEnabled() }
+    }
+    
+    public func contentMode(_ contentMode: @autoclosure @escaping () -> UIView.ContentMode) -> Modifier<Self> {
+        Modifier(self) { $0.contentMode = contentMode() }
+    }
+    
+    public func isAccessibilityElement(_ isAccessibilityElement: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.isAccessibilityElement = isAccessibilityElement() }
+    }
+    
+    public func accessibilityLabel(_ accessibilityLabel: @autoclosure @escaping () -> String) -> Modifier<Self> {
+        Modifier(self) { $0.accessibilityLabel = accessibilityLabel() }
+    }
+    
+    public func accessibilityHint(_ accessibilityHint: @autoclosure @escaping () -> String) -> Modifier<Self> {
+        Modifier(self) { $0.accessibilityHint = accessibilityHint() }
+    }
 }

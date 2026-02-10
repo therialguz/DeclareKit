@@ -109,4 +109,20 @@ extension RepresentableNode where Representable == UIScrollView {
     public func isDirectionalLockEnabled(_ isDirectionalLockEnabled: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
         Modifier(self) { $0.isDirectionalLockEnabled = isDirectionalLockEnabled() }
     }
+    
+    public func showsVerticalScrollIndicator(_ showsVerticalScrollIndicator: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.showsVerticalScrollIndicator = showsVerticalScrollIndicator() }
+    }
+    
+    public func showsHorizontalScrollIndicator(_ showsHorizontalScrollIndicator: @autoclosure @escaping () -> Bool) -> Modifier<Self> {
+        Modifier(self) { $0.showsHorizontalScrollIndicator = showsHorizontalScrollIndicator() }
+    }
+    
+    public func contentInset(_ contentInset: @autoclosure @escaping () -> UIEdgeInsets) -> Modifier<Self> {
+        Modifier(self) { $0.contentInset = contentInset() }
+    }
+    
+    public func keyboardDismissMode(_ keyboardDismissMode: @autoclosure @escaping () -> UIScrollView.KeyboardDismissMode) -> Modifier<Self> {
+        Modifier(self) { $0.keyboardDismissMode = keyboardDismissMode() }
+    }
 }
