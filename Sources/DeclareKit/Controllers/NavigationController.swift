@@ -15,9 +15,15 @@ struct NavigationController<Content: RepresentableController>: RepresentableCont
         self.content = content()
     }
 
-    func buildController() -> UIViewController {
+    func buildController() -> UINavigationController {
         let rootViewController = content.buildController()
         return DKNavigationController(rootViewController: rootViewController)
+    }
+}
+
+extension RepresentableController where Representable == UINavigationController {
+    func navigationBar(prefersLargeTitles: @autoclosure @escaping () -> Bool) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationBar.prefersLargeTitles = prefersLargeTitles() }
     }
 }
 
@@ -56,6 +62,9 @@ final class DKNavigationController: UINavigationController, LifecycleRegistrable
         ViewController {
             Label("Miau")
         }
+        .title("Chuta")
     }
+    .navigationItem(largeTitle: "Large Title")
+    .navigationBar(prefersLargeTitles: true)
     .buildController()
 }

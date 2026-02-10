@@ -5,53 +5,62 @@ import UIKit
 /// A modified view controller that applies a configuration closure.
 struct ModifiedController<Content: RepresentableController>: RepresentableController {
     private let content: Content
-    private let modifier: (UIViewController) -> Void
+    private let modifier: (Content.Representable) -> Void
     private let reactive: Bool
 
     init(
         content: Content,
         reactive: Bool = true,
-        modifier: @escaping (UIViewController) -> Void
+        modifier: @escaping (Content.Representable) -> Void
     ) {
         self.content = content
         self.modifier = modifier
         self.reactive = reactive
     }
 
-    func buildController() -> UIViewController {
+    func buildController() -> Content.Representable {
         let controller = content.buildController()
-        applyModifier(to: controller)
-        return controller
-    }
-
-    func buildControllerList() -> [UIViewController] {
-        let controllers = content.buildControllerList()
-        controllers.forEach { applyModifier(to: $0) }
-        return controllers
-    }
-
-    private func applyModifier(to controller: UIViewController) {
+        
         if reactive {
             createEffect { [weak controller] in
                 guard let controller else { return }
-                modifier(controller)
+                if let animation = AnimationContext.current {
+                    animation.perform {
+                        self.modifier(controller)
+                    }
+                } else {
+                    self.modifier(controller)
+                }
             }
-            return
+        } else {
+            modifier(controller)
         }
-
-        modifier(controller)
+        
+        return controller
     }
 }
 
 extension RepresentableController {
-    func title(_ title: @autoclosure @escaping () -> String) -> some RepresentableController {
+    func title(_ title: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.title = title() }
     }
+    
+    func navigationItem(title: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.title = title() }
+    }
+    
+    func navigationItem(largeTitleDisplayMode: @autoclosure @escaping () -> UINavigationItem.LargeTitleDisplayMode) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.largeTitleDisplayMode = .always }
+    }
+    
+    func navigationItem(largeTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.largeTitle = largeTitle() }
+    }
 }
 
 extension RepresentableController {
 
-    func tabBarItem(_ tabBarItem: UITabBarItem) -> some RepresentableController {
+    func tabBarItem(_ tabBarItem: UITabBarItem) -> ModifiedController<Self> {
         ModifiedController(content: self, modifier: { $0.tabBarItem = tabBarItem })
     }
 
@@ -64,7 +73,7 @@ extension RepresentableController {
     /// ViewController { ... }
     ///     .tabItem(title: "Settings")
     /// ```
-    func tabBarItem(title: String) -> some RepresentableController {
+    func tabBarItem(title: String) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem.title = title
         }
@@ -79,7 +88,7 @@ extension RepresentableController {
     /// NavigationController { ... }
     ///     .tabItem(title: "Home", systemImage: "house")
     /// ```
-    func tabBarItem(title: String, systemImage: String) -> some RepresentableController {
+    func tabBarItem(title: String, systemImage: String) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem.title = title
             vc.tabBarItem.image = UIImage(systemName: systemImage)
@@ -95,7 +104,7 @@ extension RepresentableController {
     /// ViewController { ... }
     ///     .tabItem(title: "Profile", image: myCustomImage)
     /// ```
-    func tabBarItem(title: String, image: UIImage?) -> some RepresentableController {
+    func tabBarItem(title: String, image: UIImage?) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem = UITabBarItem(title: title, image: image, tag: 0)
         }
@@ -111,7 +120,7 @@ extension RepresentableController {
     ///     .tabItem(title: "Messages", systemImage: "message")
     ///     .tabBadge("5")
     /// ```
-    func tabBarItem(badge: String?) -> some RepresentableController {
+    func tabBarItem(badge: String?) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.badgeValue = badge
         }
@@ -126,7 +135,7 @@ extension RepresentableController {
     ///     .tabBadge("3")
     ///     .tabBadgeColor(.systemBlue)
     /// ```
-    func tabBarItem(badgeColor: UIColor) -> some RepresentableController {
+    func tabBarItem(badgeColor: UIColor) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.badgeColor = badgeColor
         }
@@ -140,7 +149,7 @@ extension RepresentableController {
     ///     .tabItem(title: "Settings", systemImage: "gear")
     ///     .tabAccessibilityLabel("Settings Tab")
     /// ```
-    func tabBarItem(accessibilityLabel: String) -> some RepresentableController {
+    func tabBarItem(accessibilityLabel: String) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.accessibilityLabel = accessibilityLabel
         }
@@ -154,7 +163,7 @@ extension RepresentableController {
     ///     .tabItem(title: "Profile", systemImage: "person")
     ///     .tabAccessibilityHint("Double tap to view your profile")
     /// ```
-    func tabBarItem(accessibilityHint: String) -> some RepresentableController {
+    func tabBarItem(accessibilityHint: String) -> ModifiedController<Self> {
         ModifiedController(content: self) { vc in
             vc.tabBarItem?.accessibilityHint = accessibilityHint
         }

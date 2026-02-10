@@ -7,8 +7,10 @@ import UIKit
 /// in controller-based hierarchies like tab bars and navigation stacks.
 @MainActor
 protocol RepresentableController {
+    associatedtype Representable: UIViewController
+    
     /// Builds and returns a single UIViewController representing this controller node.
-    func buildController() -> UIViewController
+    func buildController() -> Representable
 
     /// Builds and returns an array of UIViewControllers.
     ///

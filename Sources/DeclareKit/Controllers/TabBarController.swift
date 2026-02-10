@@ -85,12 +85,16 @@ struct CounterViewScreen: Screen {
     var body: some RepresentableController {
         ViewController {
             SafeAreaView {
-                Stack(.vertical) {
+//                Stack(.vertical) {
                     Counter(count: $count)
                         .backgroundColor(count % 2 == 0 ? .green : .yellow)
                         .layer(cornerRadius: count % 2 == 0 ? 40 : 400)
-                }
-                .backgroundColor(.blue)
+                        .layer(shadowColor: .black)
+                        .layer(shadowRadius: 20)
+                        .layer(shadowOpacity: 1)
+                        .layer(opacity: count % 2 == 0 ? 0.25 : 1)
+//                }
+//                .backgroundColor(.blue)
             }
             .backgroundColor(.red)
         }
