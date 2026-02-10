@@ -7,18 +7,14 @@ let package = Package(
     name: "DeclareKit",
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "DeclareKit",
-            targets: ["DeclareKit"]
-        ),
+        .library(name: "DeclareKit", targets: ["DeclareKit"]),
+        .library(name: "DeclareKitCore", targets: ["DeclareKitCore"]),
+        .library(name: "DeclareKitUIKit", targets: ["DeclareKitUIKit"]),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "DeclareKit"
-        ),
+        .target(name: "DeclareKitCore"),
+        .target(name: "DeclareKitUIKit", dependencies: ["DeclareKitCore"]),
+        .target(name: "DeclareKit", dependencies: ["DeclareKitCore", "DeclareKitUIKit"]),
         .testTarget(
             name: "DeclareKitTests",
             dependencies: ["DeclareKit"]
