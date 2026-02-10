@@ -125,4 +125,8 @@ extension RepresentableNode where Representable == UIScrollView {
     public func keyboardDismissMode(_ keyboardDismissMode: @autoclosure @escaping () -> UIScrollView.KeyboardDismissMode) -> Modifier<Self> {
         Modifier(self) { $0.keyboardDismissMode = keyboardDismissMode() }
     }
+    
+    public func topEdgeEffect(style: @autoclosure @escaping () -> UIScrollEdgeEffect.Style) -> Modifier<Self> {
+        Modifier(self) { $0.topEdgeEffect.style = style() }
+    }
 }

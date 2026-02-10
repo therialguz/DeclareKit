@@ -30,10 +30,28 @@ public struct TabBarController<Content: RepresentableController>: RepresentableC
     }
 
     /// Builds a `UITabBarController` with all child controllers.
-    public func buildController() -> UIViewController {
+    public func buildController() -> UITabBarController {
         let tabBarController = DKTabBarController()
         tabBarController.viewControllers = content.buildControllerList()
         return tabBarController
+    }
+}
+
+extension RepresentableController where Representable == UITabBarController {
+    public func tabBarMinimizeBehavior(_ tabBarMinimizeBehavior: @autoclosure @escaping () -> UITabBarController.MinimizeBehavior) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.tabBarMinimizeBehavior = tabBarMinimizeBehavior() }
+    }
+    
+    public func bottomAccessory(_ bottomAccessory: @autoclosure @escaping () -> UITabAccessory) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.bottomAccessory = bottomAccessory() }
+    }
+    
+    public func mode(_ mode: @autoclosure @escaping () -> UITabBarController.Mode) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.mode = mode() }
+    }
+    
+    public func sidebar(isHidden: @autoclosure @escaping () -> Bool ) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.sidebar.isHidden = isHidden() }
     }
 }
 
@@ -120,7 +138,111 @@ struct CounterViewScreen: Screen {
         .tabBarItem(title: "Home", systemImage: "house.fill")
 
         NavigationController {
-
+            ViewController {
+                ScrollView {
+                    Stack(.vertical) {
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                        Label("Chuta")
+                    }
+                }
+            }
         }
         .tabBarItem(title: "Settings", systemImage: "gearshape.fill")
         .tabBarItem(badge: "4")
@@ -128,7 +250,22 @@ struct CounterViewScreen: Screen {
         NavigationController {
 
         }
+        .tabBarItem(title:  "Tab 3")
+        
+        NavigationController {
+
+        }
+        .tabBarItem(title:  "Tab 4")
+        
+        NavigationController {
+
+        }
         .tabBarItem(UITabBarItem(tabBarSystemItem: .search, tag: 0))
     }
+    .tabBarMinimizeBehavior(.onScrollDown)
+    .bottomAccessory(.init(contentView: Label("This is the accessory").build()))
+    .mode(.tabSidebar)
+    .sidebar(isHidden: true)
     .buildController()
 }
+

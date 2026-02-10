@@ -53,15 +53,23 @@ extension RepresentableController {
     public func navigationItem(title: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.navigationItem.title = title() }
     }
+    
+    /// Sets `navigationItem.largeTitle`.
+    public func navigationItem(largeTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.largeTitle = largeTitle() }
+    }
+    
+    public func navigationItem(subtitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.subtitle = subtitle() }
+    }
+    
+    public func navigationItem(largeSubtitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.largeSubtitle = largeSubtitle() }
+    }
 
     /// Sets `navigationItem.largeTitleDisplayMode`.
     public func navigationItem(largeTitleDisplayMode: @autoclosure @escaping () -> UINavigationItem.LargeTitleDisplayMode) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.navigationItem.largeTitleDisplayMode = .always }
-    }
-
-    /// Sets `navigationItem.largeTitle`.
-    public func navigationItem(largeTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
-        ModifiedController(content: self) { $0.navigationItem.largeTitle = largeTitle() }
     }
     
     public func navigationItem(backButtonTitle: @autoclosure @escaping () -> String) -> ModifiedController<Self> {
@@ -82,6 +90,10 @@ extension RepresentableController {
     
     public func navigationItem(leftBarButtonItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.navigationItem.leftBarButtonItems = leftBarButtonItems() }
+    }
+    
+    public func navigationItem(preferredSearchBarPlacement: @autoclosure @escaping () -> UINavigationItem.SearchBarPlacement) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.preferredSearchBarPlacement = preferredSearchBarPlacement() }
     }
     
     public func toolbarItems(_ toolbarItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
