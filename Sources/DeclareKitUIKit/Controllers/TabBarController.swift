@@ -24,10 +24,12 @@ import DeclareKitCore
 public struct TabBarController<Content: RepresentableController>: RepresentableController {
     private let content: Content
 
+    /// Creates a tab bar controller from a controller builder block.
     public init(@ControllerBuilder _ content: () -> Content) {
         self.content = content()
     }
 
+    /// Builds a `UITabBarController` with all child controllers.
     public func buildController() -> UIViewController {
         let tabBarController = DKTabBarController()
         tabBarController.viewControllers = content.buildControllerList()
@@ -35,8 +37,10 @@ public struct TabBarController<Content: RepresentableController>: RepresentableC
     }
 }
 
+/// Internal `UITabBarController` subclass with lifecycle callback forwarding.
 @MainActor
 public final class DKTabBarController: UITabBarController, LifecycleRegistrable {
+    /// Mutable lifecycle callback storage used by lifecycle modifiers.
     public let lifecycleCallbacks = LifecycleCallbacks()
 
     override public func viewDidLoad() {
@@ -65,6 +69,7 @@ public final class DKTabBarController: UITabBarController, LifecycleRegistrable 
     }
 }
 
+/// Preview-only counter component used in local examples.
 struct Counter: Component {
     @Binding var count: Int
 
@@ -78,6 +83,7 @@ struct Counter: Component {
     }
 }
 
+/// Preview-only screen used to demonstrate tab and lifecycle modifiers.
 struct CounterViewScreen: Screen {
     @Signal var count: Int = 5
 

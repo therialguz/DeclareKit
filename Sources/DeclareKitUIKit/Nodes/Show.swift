@@ -23,11 +23,13 @@ public struct Show<Content: RepresentableNode>: RepresentableNode {
     private let condition: () -> Bool
     private let content: () -> Content
 
+    /// Creates conditional content that is shown only when `condition` is true.
     public init(when condition: @autoclosure @escaping () -> Bool, @NodeBuilder _ content: @escaping () -> Content) {
         self.condition = condition
         self.content = content
     }
 
+    /// Builds a stable container that toggles child visibility reactively.
     public func build() -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false

@@ -8,9 +8,13 @@ import UIKit
 public enum _ConditionalController<
     TrueController: RepresentableController, FalseController: RepresentableController
 >: RepresentableController {
+    /// Active `if` branch controller.
     case first(TrueController)
+
+    /// Active `else` branch controller.
     case second(FalseController)
 
+    /// Builds the active branch as a single controller.
     public func buildController() -> UIViewController {
         switch self {
         case .first(let controller):
@@ -20,6 +24,7 @@ public enum _ConditionalController<
         }
     }
 
+    /// Builds the active branch as a controller list.
     public func buildControllerList() -> [UIViewController] {
         switch self {
         case .first(let controller):

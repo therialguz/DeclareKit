@@ -22,6 +22,7 @@ public struct ViewController<Content: RepresentableNode>: RepresentableControlle
         self.content = content
     }
 
+    /// Builds a host controller for the declared view content.
     public func buildController() -> UIViewController {
         HostViewController(content: content)
     }
@@ -31,8 +32,11 @@ public struct ViewController<Content: RepresentableNode>: RepresentableControlle
 @MainActor
 public final class HostViewController<Content: RepresentableNode>: UIViewController, LifecycleRegistrable {
     private let content: () -> Content
+
+    /// Mutable lifecycle callback storage used by lifecycle modifiers.
     public let lifecycleCallbacks = LifecycleCallbacks()
 
+    /// Creates a host controller wrapping the provided content closure.
     public init(content: @escaping () -> Content) {
         self.content = content
         super.init(nibName: nil, bundle: nil)

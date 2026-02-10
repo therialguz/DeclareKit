@@ -7,13 +7,16 @@
 
 import UIKit
 
+/// Constrains its child content to a container's safe area.
 public struct SafeAreaView<T: RepresentableNode>: RepresentableNode {
     private let content: () -> T
 
+    /// Creates a safe-area container around the provided content.
     public init(@NodeBuilder _ content: @escaping () -> T) {
         self.content = content
     }
 
+    /// Builds a container that pins all child views to safe-area guides.
     public func build() -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
