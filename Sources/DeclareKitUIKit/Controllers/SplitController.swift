@@ -7,19 +7,50 @@
 
 import UIKit
 
-public struct SplitController<Content: RepresentableController>: RepresentableController {
+public struct SplitController<Primary: RepresentableController, Secondary: RepresentableController, Supplementary: RepresentableController>: RepresentableController {
  
-    private let content: Content
+    private let primary: Primary
+    private let secondary: Secondary
+    private let supplementary: Supplementary?
 
     /// Creates a navigation controller with a root controller from `content`.
-    public init(@ControllerBuilder _ content: () -> Content) {
-        self.content = content()
+//    public init(@ControllerBuilder _ primary: () -> Primary, @ControllerBuilder secondary: () -> Secondary) {
+//        self.primary = primary()
+//        self.secondary = secondary()
+//    }
+    
+    public init(@ControllerBuilder _ primary: () -> Primary, @ControllerBuilder secondary: () -> Secondary, @ControllerBuilder supplementary: () -> Supplementary) {
+        self.primary = primary()
+        self.secondary = secondary()
+        self.supplementary = supplementary()
     }
     
     public func buildController() -> UISplitViewController {
-        let splitViewController = UISplitViewController()
-        splitViewController.viewControllers = content.buildControllerList()
+        let style = supplementary == nil ? UISplitViewController.Style.doubleColumn : UISplitViewController.Style.tripleColumn
+        let splitViewController = UISplitViewController(style: style)
+        
+        splitViewController.setViewController(primary.buildController(), for: .primary)
+        splitViewController.setViewController(secondary.buildController(), for: .secondary)
+        
+        if let supplementary {
+            splitViewController.setViewController(supplementary.buildController(), for: .supplementary)
+        }
+        
         return splitViewController
+    }
+}
+
+extension Never: RepresentableController {
+    public func buildController() -> UIViewController {
+        fatalError("Cannot call `build` on `Never")
+    }
+}
+
+public extension SplitController where Supplementary == Never {
+    init(@ControllerBuilder _ primary: () -> Primary, @ControllerBuilder secondary: () -> Secondary) {
+        self.primary = primary()
+        self.secondary = secondary()
+        self.supplementary = nil
     }
 }
 
@@ -55,22 +86,31 @@ extension RepresentableController where Representable == UISplitViewController {
 
 #Preview {
     SplitController {
-        ViewController {
-            Label("Primary")
+        NavigationController {
+            ViewController {
+                Label("Primary")
+                    .pin(to: .safeAreaLayoutGuide)
+            }
+            .title("Primary")
         }
-        
-        ViewController {
-            Label("Secondary")
+    } secondary: {
+        NavigationController {
+            ViewController {
+                Label("Secondary")
+                    .pin(to: .safeAreaLayoutGuide)
+            }
+            .title("Secondary")
+            .navigationItem(searchController: .init())
         }
-        
-        ViewController {
-            Label("Content")
-        }
-        
-        ViewController {
-            Label("Content")
+    } supplementary: {
+        NavigationController {
+            ViewController {
+                Label("Supplementary")
+                    .pin(to: .safeAreaLayoutGuide)
+            }
+            .title("Supplementary")
+            .navigationItem(searchController: .init())
         }
     }
-    .minimumPrimaryColumnWidth(10)
     .buildController()
 }

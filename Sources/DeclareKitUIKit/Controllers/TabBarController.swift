@@ -241,7 +241,9 @@ struct CounterViewScreen: Screen {
                         Label("Chuta")
                         Label("Chuta")
                     }
+                    .pin(to: .safeAreaLayoutGuide)
                 }
+                .pinToSuperview()
             }
         }
         .tabBarItem(title: "Settings", systemImage: "gearshape.fill")
@@ -258,7 +260,11 @@ struct CounterViewScreen: Screen {
         .tabBarItem(title:  "Tab 4")
         
         NavigationController {
-
+            ViewController {
+                
+            }
+            .navigationItem(searchController: .init())
+            .navigationItem(preferredSearchBarPlacement: .stacked)
         }
         .tabBarItem(UITabBarItem(tabBarSystemItem: .search, tag: 0))
     }

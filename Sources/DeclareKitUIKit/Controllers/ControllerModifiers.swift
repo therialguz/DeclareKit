@@ -96,6 +96,10 @@ extension RepresentableController {
         ModifiedController(content: self) { $0.navigationItem.preferredSearchBarPlacement = preferredSearchBarPlacement() }
     }
     
+    public func navigationItem(searchController: @autoclosure @escaping () -> UISearchController) -> ModifiedController<Self> {
+        ModifiedController(content: self) { $0.navigationItem.searchController = searchController() }
+    }
+    
     public func toolbarItems(_ toolbarItems: @autoclosure @escaping () -> [UIBarButtonItem]?) -> ModifiedController<Self> {
         ModifiedController(content: self) { $0.toolbarItems = toolbarItems() }
     }
