@@ -88,8 +88,14 @@ extension RepresentableController where Representable == UISplitViewController {
     SplitController {
         NavigationController {
             ViewController {
-                Label("Primary")
-                    .pin(to: .safeAreaLayoutGuide)
+                ScrollView {
+                    Stack(.vertical) {
+                        Label("Primary")
+                            .backgroundColor(.blue)
+                    }
+                    .backgroundColor(.green)
+                }
+                .backgroundColor(.red)
             }
             .title("Primary")
         }

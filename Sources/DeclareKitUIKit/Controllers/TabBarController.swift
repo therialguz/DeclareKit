@@ -269,7 +269,8 @@ struct CounterViewScreen: Screen {
         .tabBarItem(UITabBarItem(tabBarSystemItem: .search, tag: 0))
     }
     .tabBarMinimizeBehavior(.onScrollDown)
-    .bottomAccessory(.init(contentView: Label("This is the accessory").build()))
+    .bottomAccessory(.init(contentView:
+                            Label("This is the accessory").pinToSuperview(insets: .init(top: 20, left: 40, bottom: 20, right: 40)).build()))
     .mode(.tabSidebar)
     .sidebar(isHidden: true)
     .buildController()
