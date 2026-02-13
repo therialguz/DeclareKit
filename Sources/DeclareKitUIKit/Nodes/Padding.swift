@@ -18,9 +18,10 @@ public struct Padding<NodeContent: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds a container view constrained to the padded child content.
-    public func build() -> UIView {
-        let child = content.build()
+    public func build(in context: BuildContext) -> UIView {
         let container = UIView()
+        let childContext = BuildContext(parent: container)
+        let child = content.build(in: childContext)
         container.translatesAutoresizingMaskIntoConstraints = false
 
         container.addSubview(child)

@@ -17,11 +17,12 @@ public struct SafeAreaView<T: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds a container that pins all child views to safe-area guides.
-    public func build() -> UIView {
+    public func build(in context: BuildContext) -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
-        let views = content().buildList()
+        let childContext = BuildContext(parent: container)
+        let views = content().buildList(in: childContext)
         for view in views {
             container.addSubview(view)
 

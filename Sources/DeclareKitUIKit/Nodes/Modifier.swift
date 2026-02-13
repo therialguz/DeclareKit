@@ -26,8 +26,8 @@ public struct Modifier<ModifiedNode: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds the wrapped node and applies the modifier closure.
-    public func build() -> ModifiedNode.Representable {
-        let view = node.build()
+    public func build(in context: BuildContext) -> ModifiedNode.Representable {
+        let view = node.build(in: context)
         if reactive {
             createEffect { [weak view] in
                 guard let view else { return }

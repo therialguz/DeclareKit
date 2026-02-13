@@ -17,11 +17,12 @@ public struct ScrollView<Content: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds a `UIScrollView` and pins the content to its layout guides.
-    public func build() -> UIScrollView {
+    public func build(in context: BuildContext) -> UIScrollView {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
 
-        let contentView = content().build()
+        let childContext = BuildContext(parent: scrollView)
+        let contentView = content().build(in: childContext)
         scrollView.addSubview(contentView)
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),

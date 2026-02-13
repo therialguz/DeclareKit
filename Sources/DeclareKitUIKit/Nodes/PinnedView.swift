@@ -22,9 +22,10 @@ public struct PinnedView<Content: RepresentableNode>: RepresentableNode {
         self.insets = insets
     }
 
-    public func build() -> UIView {
-        let child = content.build()
+    public func build(in context: BuildContext) -> UIView {
         let container = UIView()
+        let childContext = BuildContext(parent: container)
+        let child = content.build(in: childContext)
         container.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(child)
 

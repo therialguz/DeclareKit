@@ -11,7 +11,7 @@ public struct TextField: RepresentableNode {
     }
 
     /// Builds the configured `UITextField`.
-    public func build() -> UITextField {
+    public func build(in context: BuildContext) -> UITextField {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
 

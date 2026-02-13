@@ -10,15 +10,25 @@ public protocol RepresentableNode {
     associatedtype Representable: UIView
 
     /// Builds and returns a single view representation.
-    func build() -> Representable
+    func build(in context: BuildContext) -> Representable
 
     /// Builds and returns one or more views for tuple-like nodes.
-    func buildList() -> [UIView]
+    func buildList(in context: BuildContext) -> [UIView]
 }
 
 extension RepresentableNode {
-    /// Default implementation wrapping `build()` into a single-element array.
+    /// Default implementation wrapping `build(in:)` into a single-element array.
+    public func buildList(in context: BuildContext) -> [UIView] {
+        [build(in: context)]
+    }
+
+    /// Convenience: builds with an empty context (no parent).
+    public func build() -> Representable {
+        build(in: BuildContext())
+    }
+
+    /// Convenience: builds a list with an empty context (no parent).
     public func buildList() -> [UIView] {
-        [build()]
+        buildList(in: BuildContext())
     }
 }

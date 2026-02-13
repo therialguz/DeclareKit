@@ -30,10 +30,11 @@ public struct Show<Content: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds a stable container that toggles child visibility reactively.
-    public func build() -> UIView {
+    public func build(in context: BuildContext) -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
+        let childContext = BuildContext(parent: container)
         var childView: UIView?
 
         createEffect { [weak container] in
@@ -42,7 +43,7 @@ public struct Show<Content: RepresentableNode>: RepresentableNode {
 
             if show {
                 if childView == nil {
-                    let built = self.content().build()
+                    let built = self.content().build(in: childContext)
                     built.translatesAutoresizingMaskIntoConstraints = false
                     container.addSubview(built)
                     NSLayoutConstraint.activate([

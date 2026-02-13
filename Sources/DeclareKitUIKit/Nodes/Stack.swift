@@ -21,14 +21,18 @@ public struct Stack<Content: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds the configured `UIStackView`.
-    public func build() -> UIStackView {
-        let children = content.buildList()
-        let stack = UIStackView(arrangedSubviews: children)
+    public func build(in context: BuildContext) -> UIStackView {
+        let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = axis
         stack.spacing = spacing
         stack.alignment = alignment
         stack.distribution = .equalSpacing
+
+        let childContext = BuildContext(parent: stack)
+        for child in content.buildList(in: childContext) {
+            stack.addArrangedSubview(child)
+        }
 
         return stack
     }

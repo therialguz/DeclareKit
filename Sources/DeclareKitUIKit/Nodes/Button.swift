@@ -16,7 +16,7 @@ public struct Button: RepresentableNode {
     }
 
     /// Builds the configured `UIButton`.
-    public func build() -> UIButton {
+    public func build(in context: BuildContext) -> UIButton {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addAction(UIAction { _ in action() }, for: .touchUpInside)

@@ -18,19 +18,19 @@ public struct _TupleNode<each Child: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds child nodes wrapped into a single container view.
-    public func build() -> some UIView {
+    public func build(in context: BuildContext) -> some UIView {
         // if someone asks for a single view, wrap
         let container = UIView()
-        for child in buildList() { container.addSubview(child) }
+        for child in buildList(in: context) { container.addSubview(child) }
         return container
     }
 
     /// Builds and flattens all child views in declaration order.
-    public func buildList() -> [UIView] {
+    public func buildList(in context: BuildContext) -> [UIView] {
         var views: [UIView] = []
 
         for child in repeat each children {
-            views.append(contentsOf: child.buildList())
+            views.append(contentsOf: child.buildList(in: context))
         }
 
         return views

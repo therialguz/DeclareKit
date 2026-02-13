@@ -15,7 +15,7 @@ public struct EmptyView: RepresentableNode {
     public init() {}
 
     /// Builds an empty `UIView` instance.
-    public func build() -> some UIView {
+    public func build(in context: BuildContext) -> some UIView {
         UIView()
     }
 }

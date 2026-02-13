@@ -29,12 +29,12 @@ public struct _ConditionalNode<TrueContent: RepresentableNode, FalseContent: Rep
     }
 
     /// Builds the active branch into a concrete view.
-    public func build() -> UIView {
+    public func build(in context: BuildContext) -> UIView {
         switch storage {
         case .trueContent(let trueContent):
-            trueContent.build()
+            trueContent.build(in: context)
         case .falseContent(let falseContent):
-            falseContent.build()
+            falseContent.build(in: context)
         }
     }
 }

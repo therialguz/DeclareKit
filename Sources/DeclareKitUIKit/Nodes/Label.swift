@@ -11,7 +11,7 @@ public struct Label: RepresentableNode {
     }
 
     /// Builds the configured `UILabel`.
-    public func build() -> UILabel {
+    public func build(in context: BuildContext) -> UILabel {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         createEffect { [weak label] in

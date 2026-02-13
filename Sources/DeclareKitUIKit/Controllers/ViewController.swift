@@ -49,7 +49,8 @@ public final class HostViewController<Content: RepresentableNode>: UIViewControl
     override public func loadView() {
         super.loadView()
 
-        let views = content().buildList()
+        let context = BuildContext(parent: view)
+        let views = content().buildList(in: context)
         for child in views {
             view.addSubview(child)
             NSLayoutConstraint.activate([

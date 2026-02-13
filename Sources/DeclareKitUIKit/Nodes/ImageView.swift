@@ -21,7 +21,7 @@ public struct ImageView: RepresentableNode {
     }
 
     /// Builds the configured `UIImageView`.
-    public func build() -> UIImageView {
+    public func build(in context: BuildContext) -> UIImageView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         createEffect { [weak imageView] in
