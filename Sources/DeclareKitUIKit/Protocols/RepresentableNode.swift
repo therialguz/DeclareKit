@@ -24,11 +24,7 @@ extension RepresentableNode {
 
     /// Convenience: builds with an empty context (no parent).
     public func build() -> Representable {
-        build(in: BuildContext())
-    }
-
-    /// Convenience: builds a list with an empty context (no parent).
-    public func buildList() -> [UIView] {
-        buildList(in: BuildContext())
+        let context = BuildContext(parent: nil)
+        return build(in: context)
     }
 }

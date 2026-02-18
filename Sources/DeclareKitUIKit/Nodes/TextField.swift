@@ -33,7 +33,7 @@ public struct TextField: RepresentableNode {
     }
 }
 
-struct Test: Component {
+struct Test: View {
     @Signal var text: String = "Hello World"
     
     var body: some RepresentableNode {
@@ -44,9 +44,4 @@ struct Test: Component {
                 .placeholder("Enter your text here")
         }
     }
-}
-
-#Preview {
-    Test()
-        .build()
 }

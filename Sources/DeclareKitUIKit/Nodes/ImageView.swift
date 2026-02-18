@@ -50,8 +50,3 @@ extension RepresentableNode where Representable == UIImageView {
         Modifier(self) { $0.preferredSymbolConfiguration = configuration() }
     }
 }
-
-#Preview {
-    ImageView(named: "plus")
-        .build()
-}

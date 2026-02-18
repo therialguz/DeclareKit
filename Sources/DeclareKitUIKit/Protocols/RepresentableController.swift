@@ -23,20 +23,4 @@ extension RepresentableController {
     public func buildControllerList() -> [UIViewController] {
         [buildController()]
     }
-
-    /// Creates a preview UIViewController for Xcode previews.
-    ///
-    /// Example:
-    /// ```swift
-    /// #Preview {
-    ///     TabBarController {
-    ///         NavigationController { HomeView() }
-    ///             .tabItem(title: "Home", systemImage: "house")
-    ///     }
-    ///     .preview()
-    /// }
-    /// ```
-    public func preview() -> UIViewController {
-        buildController()
-    }
 }

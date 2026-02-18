@@ -52,13 +52,10 @@ public final class HostViewController<Content: RepresentableNode>: UIViewControl
         let context = BuildContext(parent: view)
         let views = content().buildList(in: context)
         for child in views {
-            view.addSubview(child)
-            NSLayoutConstraint.activate([
-                child.topAnchor.constraint(equalTo: view.topAnchor),
-                child.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                child.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                child.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            ])
+            // Skip children already added by a LayoutModifier.
+            if child.superview != view {
+                view.addSubview(child)
+            }
         }
     }
 

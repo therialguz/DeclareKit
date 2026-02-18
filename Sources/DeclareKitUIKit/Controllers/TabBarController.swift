@@ -88,7 +88,7 @@ public final class DKTabBarController: UITabBarController, LifecycleRegistrable 
 }
 
 /// Preview-only counter component used in local examples.
-struct Counter: Component {
+struct Counter: View {
     @Binding var count: Int
 
     var body: some RepresentableNode {
@@ -102,31 +102,28 @@ struct Counter: Component {
 }
 
 /// Preview-only screen used to demonstrate tab and lifecycle modifiers.
-struct CounterViewScreen: Screen {
+struct CounterViewScreen: Controller {
     @Signal var count: Int = 5
 
     var body: some RepresentableController {
         ViewController {
-            SafeAreaView {
-//                Stack(.vertical) {
-                    Counter(count: $count)
-                        .backgroundColor(count % 2 == 0 ? .green : .yellow)
-                        .layer(cornerRadius: count % 2 == 0 ? 40 : 400)
-                        .layer(shadowColor: .black)
-                        .layer(shadowRadius: 20)
-                        .layer(shadowOpacity: 1)
-                        .layer(opacity: count % 2 == 0 ? 0.25 : 1)
-//                }
-//                .backgroundColor(.blue)
-            }
-            .backgroundColor(.red)
+            Counter(count: $count)
+                .backgroundColor(count % 2 == 0 ? .green : .yellow)
+                .layer(cornerRadius: count % 2 == 0 ? 40 : 400)
+                .layer(shadowColor: .black)
+                .layer(shadowRadius: 20)
+                .layer(shadowOpacity: 1)
+                .layer(opacity: count % 2 == 0 ? 0.25 : 1)
+                .pin(to: .safeAreaLayoutGuide, edges: [.leading, .top, .trailing])
+                .pinToSuperview(edges: .bottom)
+                .backgroundColor(.red)
         }
         .title("Counter (\(count))")
-        .viewDidLoad({ print("viewDidLoad") })
-        .viewWillAppear({ print("viewWillAppear") })
-        .viewDidAppear({ print("viewDidAppear") })
-        .viewWillDisappear({ print("viewWillAppear") })
-        .viewDidDisappear({ print("viewDidDisappear") })
+//        .viewDidLoad({ print("viewDidLoad") })
+//        .viewWillAppear({ print("viewWillAppear") })
+//        .viewDidAppear({ print("viewDidAppear") })
+//        .viewWillDisappear({ print("viewWillAppear") })
+//        .viewDidDisappear({ print("viewDidDisappear") })
     }
 }
 
@@ -241,10 +238,10 @@ struct CounterViewScreen: Screen {
                         Label("Chuta")
                         Label("Chuta")
                     }
-                    .pin(to: .safeAreaLayoutGuide)
                 }
                 .pinToSuperview()
             }
+            .title("Hello World!")
         }
         .tabBarItem(title: "Settings", systemImage: "gearshape.fill")
         .tabBarItem(badge: "4")
@@ -269,8 +266,7 @@ struct CounterViewScreen: Screen {
         .tabBarItem(UITabBarItem(tabBarSystemItem: .search, tag: 0))
     }
     .tabBarMinimizeBehavior(.onScrollDown)
-    .bottomAccessory(.init(contentView:
-                            Label("This is the accessory").pinToSuperview(insets: .init(top: 20, left: 40, bottom: 20, right: 40)).build()))
+//    .bottomAccessory(tabAccessory)
     .mode(.tabSidebar)
     .sidebar(isHidden: true)
     .buildController()

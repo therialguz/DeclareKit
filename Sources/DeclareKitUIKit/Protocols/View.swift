@@ -1,5 +1,5 @@
 //
-//  Component.swift
+//  View.swift
 //  DeclareKit
 //
 //  Created by Benjamín Guzmán López on 08-02-26.
@@ -7,11 +7,7 @@
 
 import UIKit
 
-/// A reusable declarative view component.
-///
-/// Conforming types describe their content in `body` and automatically
-/// forward rendering through the underlying `RepresentableNode`.
-public protocol Component: RepresentableNode {
+public protocol View: RepresentableNode {
     /// The rendered node content for this component.
     associatedtype Body: RepresentableNode
 
@@ -19,7 +15,7 @@ public protocol Component: RepresentableNode {
     @NodeBuilder var body: Body { get }
 }
 
-extension Component {
+extension View {
     /// Builds this component by building its `body`.
     public func build(in context: BuildContext) -> Body.Representable {
         body.build(in: context)

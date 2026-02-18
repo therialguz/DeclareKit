@@ -1,5 +1,5 @@
 //
-//  Screen.swift
+//  Controller.swift
 //  DeclareKit
 //
 //  Created by Benjamín Guzmán López on 08-02-26.
@@ -7,11 +7,7 @@
 
 import UIKit
 
-/// A reusable declarative controller component.
-///
-/// `Screen` mirrors `Component` for controller composition. Implement `body`
-/// and DeclareKit will forward controller construction automatically.
-public protocol Screen: RepresentableController {
+public protocol Controller: RepresentableController {
     /// The composed controller content for this screen.
     associatedtype Body: RepresentableController
 
@@ -19,7 +15,7 @@ public protocol Screen: RepresentableController {
     @ControllerBuilder var body: Body { get }
 }
 
-extension Screen {
+extension Controller {
     /// Builds this screen by building its `body`.
     public func buildController() -> UIViewController {
         body.buildController()
