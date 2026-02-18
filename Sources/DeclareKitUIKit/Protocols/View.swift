@@ -17,12 +17,7 @@ public protocol View: RepresentableNode {
 
 extension View {
     /// Builds this component by building its `body`.
-    public func build(in context: BuildContext) -> Body.Representable {
+    public func build(in context: BuildContext) {
         body.build(in: context)
-    }
-
-    /// Builds this component as a flattened list of views.
-    public func buildList(in context: BuildContext) -> [UIView] {
-        body.buildList(in: context)
     }
 }

@@ -92,12 +92,19 @@ struct Counter: View {
     @Binding var count: Int
 
     var body: some RepresentableNode {
-        Button("Increase Count (\(count))", action: {
-            withAnimation {
-                count += 1
+        Stack(.vertical) {
+            Show(when: count % 2 == 0) {
+                Label("Es par! :)")
             }
-            print("Increasing count from button: \(count)")
-        })
+            
+            Button("Increase Count (\(count))", action: {
+                withAnimation {
+                    count += 1
+                }
+                print("Increasing count from button: \(count)")
+            })
+        }
+        .pin(to: .safeAreaLayoutGuide)
     }
 }
 
@@ -114,8 +121,6 @@ struct CounterViewScreen: Controller {
                 .layer(shadowRadius: 20)
                 .layer(shadowOpacity: 1)
                 .layer(opacity: count % 2 == 0 ? 0.25 : 1)
-                .pin(to: .safeAreaLayoutGuide, edges: [.leading, .top, .trailing])
-                .pinToSuperview(edges: .bottom)
                 .backgroundColor(.red)
         }
         .title("Counter (\(count))")

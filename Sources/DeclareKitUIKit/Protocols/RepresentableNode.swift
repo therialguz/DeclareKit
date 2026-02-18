@@ -6,25 +6,15 @@ import UIKit
 /// Conforming types can produce either one view (`build`) or many (`buildList`).
 @MainActor
 public protocol RepresentableNode {
-    /// The concrete view type produced by this node.
-    associatedtype Representable: UIView
-
+    associatedtype Representable: UIView = UIView
     /// Builds and returns a single view representation.
-    func build(in context: BuildContext) -> Representable
-
-    /// Builds and returns one or more views for tuple-like nodes.
-    func buildList(in context: BuildContext) -> [UIView]
+    func build(in context: BuildContext)
 }
 
 extension RepresentableNode {
-    /// Default implementation wrapping `build(in:)` into a single-element array.
-    public func buildList(in context: BuildContext) -> [UIView] {
-        [build(in: context)]
-    }
-
     /// Convenience: builds with an empty context (no parent).
-    public func build() -> Representable {
+    public func build() {
         let context = BuildContext(parent: nil)
-        return build(in: context)
+        build(in: context)
     }
 }

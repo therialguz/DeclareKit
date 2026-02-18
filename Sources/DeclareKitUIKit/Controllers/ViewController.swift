@@ -31,14 +31,14 @@ public struct ViewController<Content: RepresentableNode>: RepresentableControlle
 /// Internal UIViewController that hosts RepresentableNode content.
 @MainActor
 public final class HostViewController<Content: RepresentableNode>: UIViewController, LifecycleRegistrable {
-    private let content: () -> Content
+    private let content: Content
 
     /// Mutable lifecycle callback storage used by lifecycle modifiers.
     public let lifecycleCallbacks = LifecycleCallbacks()
 
     /// Creates a host controller wrapping the provided content closure.
-    public init(content: @escaping () -> Content) {
-        self.content = content
+    public init(content: () -> Content) {
+        self.content = content()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -50,13 +50,7 @@ public final class HostViewController<Content: RepresentableNode>: UIViewControl
         super.loadView()
 
         let context = BuildContext(parent: view)
-        let views = content().buildList(in: context)
-        for child in views {
-            // Skip children already added by a LayoutModifier.
-            if child.superview != view {
-                view.addSubview(child)
-            }
-        }
+        content.build(in: context)
     }
 
     override public func viewDidLoad() {

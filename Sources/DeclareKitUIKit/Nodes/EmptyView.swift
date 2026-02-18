@@ -11,16 +11,13 @@ import UIKit
 ///
 /// Useful as a placeholder in builders where a `RepresentableNode` is required.
 public struct EmptyView: RepresentableNode {
+    public typealias Representable = UIView
+    
     /// Creates an empty view node.
     public init() {}
 
     /// Builds an empty `UIView` instance.
-    public func build(in context: BuildContext) -> some UIView {
-        UIView()
-    }
-
-    /// Returns no views — an empty node contributes nothing to a list.
-    public func buildList(in context: BuildContext) -> [UIView] {
-        []
+    public func build(in context: BuildContext) {
+        context.insertChild(UIView(), nil)
     }
 }

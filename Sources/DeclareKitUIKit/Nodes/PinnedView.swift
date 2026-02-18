@@ -32,11 +32,8 @@ extension RepresentableNode {
         edges: LayoutEdge,
         insets: UIEdgeInsets
     ) -> LayoutModifier<Self> {
-        LayoutModifier(self) { view, context in
-            print("View: \(view), context: \(context)")
-            guard let parent = context.parent else { return }
-            
-            parent.addSubview(view)
+        LayoutModifier(self) { view in
+            guard let parent = view.superview else { return }
 
             // Resolve anchor source: layout guide or parent itself.
             let topTarget: NSLayoutYAxisAnchor

@@ -3,6 +3,8 @@ import DeclareKitCore
 
 /// A reactive `UILabel` component.
 public struct Label: RepresentableNode {
+    public typealias Representable = UILabel
+    
     private let text: () -> String
 
     /// Creates a label with a reactive text source.
@@ -11,13 +13,14 @@ public struct Label: RepresentableNode {
     }
 
     /// Builds the configured `UILabel`.
-    public func build(in context: BuildContext) -> UILabel {
+    public func build(in context: BuildContext) {
         let label = UILabel()
+        context.insertChild(label, nil)
         label.translatesAutoresizingMaskIntoConstraints = false
+        
         createEffect { [weak label] in
             guard let label else { return }
             label.text = self.text()
         }
-        return label
     }
 }

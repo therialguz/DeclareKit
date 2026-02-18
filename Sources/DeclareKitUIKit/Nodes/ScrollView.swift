@@ -9,6 +9,8 @@ import UIKit
 
 /// A declarative wrapper around `UIScrollView`.
 public struct ScrollView<Content: RepresentableNode>: RepresentableNode {
+    public typealias Representable = UIScrollView
+    
     private let content: () -> Content
 
     /// Creates a scroll view with the provided content.
@@ -17,21 +19,25 @@ public struct ScrollView<Content: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds a `UIScrollView` and pins the content to its layout guides.
-    public func build(in context: BuildContext) -> UIScrollView {
+    public func build(in context: BuildContext) {
         let scrollView = UIScrollView()
+        context.insertChild(scrollView, nil)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-        let childContext = BuildContext(parent: scrollView)
-        let contentView = content().build(in: childContext)
+        
+        let contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
+
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
         ])
+        
+        let scrollViewContext = BuildContext(parent: contentView)
 
-        return scrollView
+        content().build(in: scrollViewContext)
     }
 }
 

@@ -1,22 +1,6 @@
 import UIKit
 import DeclareKitCore
 
-// MARK: - _ShowAnchor
-
-/// A permanently-mounted hidden view that holds Show's positional slot in its parent.
-///
-/// Fires `onMount` once after being inserted into a superview, which is the safe
-/// point to start reactive effects (the anchor is in the hierarchy at that moment).
-private final class _ShowAnchor: UIView {
-    var onMount: (() -> Void)?
-
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        guard superview != nil else { return }
-        onMount?()
-        onMount = nil
-    }
-}
 
 // MARK: - Show
 
@@ -24,8 +8,9 @@ private final class _ShowAnchor: UIView {
 ///
 /// Analogous to SolidJS `<Show>`. When `condition` is true, `content` is inserted
 /// into the view hierarchy at the Show's position; when false, it is removed and
-/// `fallback` (if provided) is inserted instead. Views are **cached** after the
-/// first build and reused across condition changes.
+/// `fallback` (if provided) is inserted instead. Views are destroyed on hide and
+/// rebuilt on show. Use `.isHidden` if you need to preserve view state across
+/// visibility changes.
 ///
 /// ```swift
 /// Show(when: isLoggedIn) {
@@ -50,40 +35,29 @@ public struct Show<Content: RepresentableNode, Fallback: RepresentableNode>: Rep
         self.fallback = fallback()
     }
 
-    public func build(in context: BuildContext) -> UIView {
-        let anchor = _ShowAnchor()
+    public func build(in context: BuildContext) {
+        let anchor = UIView()
         anchor.isHidden = true
         anchor.translatesAutoresizingMaskIntoConstraints = false
+        context.insertChild(anchor, nil)
 
-        let insertChild = context.insertChild
         let content = self.content
         let fallback = self.fallback
         let condition = self.condition
 
-        var contentViews: [UIView]? = nil
-        var fallbackViews: [UIView]? = nil
+        var currentViews: [UIView] = []
 
-        anchor.onMount = {
-            createEffect { [weak anchor] in
-                guard anchor?.superview != nil else { return }
+        createEffect { [weak anchor] in
+            guard let anchor, anchor.superview != nil else { return }
 
-                if condition() {
-                    fallbackViews?.forEach { $0.removeFromSuperview() }
-                    if contentViews == nil {
-                        contentViews = content.buildList(in: context)
-                    }
-                    contentViews?.forEach { insertChild($0, anchor) }
-                } else {
-                    contentViews?.forEach { $0.removeFromSuperview() }
-                    if fallbackViews == nil {
-                        fallbackViews = fallback.buildList(in: context)
-                    }
-                    fallbackViews?.forEach { insertChild($0, anchor) }
-                }
+            currentViews.forEach { $0.removeFromSuperview() }
+
+            if condition() {
+                currentViews = context.capture(before: anchor) { content.build(in: $0) }
+            } else {
+                currentViews = context.capture(before: anchor) { fallback.build(in: $0) }
             }
         }
-
-        return anchor
     }
 }
 
@@ -106,7 +80,7 @@ extension Show where Fallback == EmptyView {
 #Preview {
     ViewController {
         @Signal var visible: Bool = true
-        
+
         Stack(.vertical, spacing: 16) {
             Show(when: visible) {
                 Label("Content is visible")
@@ -115,7 +89,9 @@ extension Show where Fallback == EmptyView {
                 Label("Fallback is visible")
                     .backgroundColor(.systemOrange)
             }
+
             Button("Toggle") { visible.toggle() }
         }
+        .pin(to: .safeAreaLayoutGuide)
     }.buildController()
 }

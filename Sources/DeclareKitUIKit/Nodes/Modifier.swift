@@ -5,6 +5,8 @@ import DeclareKitCore
 ///
 /// Modifier closures are reactive by default and re-run when observed signals change.
 public struct Modifier<ModifiedNode: RepresentableNode>: RepresentableNode {
+    public typealias Representable = ModifiedNode.Representable
+    
     private let node: ModifiedNode
     private let modifier: (ModifiedNode.Representable) -> Void
     private let reactive: Bool
@@ -26,22 +28,22 @@ public struct Modifier<ModifiedNode: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds the wrapped node and applies the modifier closure.
-    public func build(in context: BuildContext) -> ModifiedNode.Representable {
-        let view = node.build(in: context)
-        if reactive {
-            createEffect { [weak view] in
-                guard let view else { return }
-                if let animation = AnimationContext.current {
-                    animation.perform {
-                        self.modifier(view)
+    public func build(in context: BuildContext) {
+        let wrappedContext = context.intercepting { view in
+            guard let typed = view as? ModifiedNode.Representable else { return }
+            if self.reactive {
+                createEffect { [weak typed] in
+                    guard let typed else { return }
+                    if let animation = AnimationContext.current {
+                        animation.perform { self.modifier(typed) }
+                    } else {
+                        self.modifier(typed)
                     }
-                } else {
-                    self.modifier(view)
                 }
+            } else {
+                self.modifier(typed)
             }
-        } else {
-            modifier(view)
         }
-        return view
+        node.build(in: wrappedContext)
     }
 }

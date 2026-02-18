@@ -2,6 +2,8 @@ import UIKit
 
 /// A declarative wrapper around `UIStackView`.
 public struct Stack<Content: RepresentableNode>: RepresentableNode {
+    public typealias Representable = UIStackView
+    
     private let axis: NSLayoutConstraint.Axis
     private let spacing: CGFloat
     private let alignment: UIStackView.Alignment
@@ -21,15 +23,16 @@ public struct Stack<Content: RepresentableNode>: RepresentableNode {
     }
 
     /// Builds the configured `UIStackView`.
-    public func build(in context: BuildContext) -> UIStackView {
+    public func build(in context: BuildContext) {
         let stack = UIStackView()
+        context.insertChild(stack, nil)
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = axis
         stack.spacing = spacing
         stack.alignment = alignment
         stack.distribution = .equalSpacing
 
-        let childContext = BuildContext(parent: stack) { [weak stack] view, before in
+        let stackContext = BuildContext(parent: stack) { [weak stack] view, before in
             guard let stack else { return }
             if let before, let index = stack.arrangedSubviews.firstIndex(of: before) {
                 stack.insertArrangedSubview(view, at: index)
@@ -37,10 +40,7 @@ public struct Stack<Content: RepresentableNode>: RepresentableNode {
                 stack.addArrangedSubview(view)
             }
         }
-        for child in content.buildList(in: childContext) {
-            stack.addArrangedSubview(child)
-        }
-
-        return stack
+        
+        content.build(in: stackContext)
     }
 }

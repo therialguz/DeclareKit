@@ -6,6 +6,8 @@ import DeclareKitCore
 /// The title closure is tracked reactively, and the action is triggered
 /// when the button receives `.touchUpInside`.
 public struct Button: RepresentableNode {
+    public typealias Representable = UIButton
+    
     private let title: () -> String
     private let action: () -> Void
 
@@ -16,15 +18,15 @@ public struct Button: RepresentableNode {
     }
 
     /// Builds the configured `UIButton`.
-    public func build(in context: BuildContext) -> UIButton {
+    public func build(in context: BuildContext) {
         let button = UIButton(type: .system)
+        context.insertChild(button, nil)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addAction(UIAction { _ in action() }, for: .touchUpInside)
         createEffect { [weak button] in
             guard let button else { return }
             button.setTitle(self.title(), for: .normal)
         }
-        return button
     }
 }
 

@@ -3,6 +3,8 @@ import DeclareKitCore
 
 /// A reactive `UIImageView` component.
 public struct ImageView: RepresentableNode {
+    public typealias Representable = UIImageView
+    
     private let image: () -> UIImage?
 
     /// Creates an image view with a reactive image source.
@@ -21,14 +23,14 @@ public struct ImageView: RepresentableNode {
     }
 
     /// Builds the configured `UIImageView`.
-    public func build(in context: BuildContext) -> UIImageView {
+    public func build(in context: BuildContext) {
         let imageView = UIImageView()
+        context.insertChild(imageView, nil)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         createEffect { [weak imageView] in
             guard let imageView else { return }
             imageView.image = self.image()
         }
-        return imageView
     }
 }
 
