@@ -22,29 +22,6 @@ public struct ControllerBuilder {
         _TupleController(repeat each content)
     }
 
-    /// Supports `if` statements without `else`.
-    public static func buildOptional<C: RepresentableController>(_ controller: C?) -> C? {
-        controller
-    }
-
-    /// Supports `if-else` statements - first branch.
-    public static func buildEither<
-        TrueController: RepresentableController, FalseController: RepresentableController
-    >(
-        first controller: TrueController
-    ) -> _ConditionalController<TrueController, FalseController> {
-        .first(controller)
-    }
-
-    /// Supports `if-else` statements - second branch.
-    public static func buildEither<
-        TrueController: RepresentableController, FalseController: RepresentableController
-    >(
-        second controller: FalseController
-    ) -> _ConditionalController<TrueController, FalseController> {
-        .second(controller)
-    }
-
     /// Allows any RepresentableController to be used in the builder.
     public static func buildExpression<C: RepresentableController>(_ controller: C) -> C {
         controller

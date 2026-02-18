@@ -30,23 +30,3 @@ public enum NodeBuilder {
         _TupleNode(repeat each content)
     }
 }
-
-extension NodeBuilder {
-    /// Produces an optional component for conditional statements in multi-statement
-    /// closures that's only visible when the condition evaluates to true.
-    public static func buildIf<Content>(_ content: Content?) -> Content? where Content : RepresentableNode {
-        content
-    }
-
-    /// Produces content for a conditional statement in a multi-statement closure
-    /// when the condition is true.
-    public static func buildEither<TrueContent, FalseContent>(first: TrueContent) -> _ConditionalNode<TrueContent, FalseContent> where TrueContent : RepresentableNode, FalseContent : RepresentableNode {
-        _ConditionalNode(storage: .trueContent(first))
-    }
-
-    /// Produces content for a conditional statement in a multi-statement closure
-    /// when the condition is false.
-    public static func buildEither<TrueContent, FalseContent>(second: FalseContent) -> _ConditionalNode<TrueContent, FalseContent> where TrueContent : RepresentableNode, FalseContent : RepresentableNode {
-        _ConditionalNode(storage: .falseContent(second))
-    }
-}
