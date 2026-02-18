@@ -29,7 +29,14 @@ public struct Stack<Content: RepresentableNode>: RepresentableNode {
         stack.alignment = alignment
         stack.distribution = .equalSpacing
 
-        let childContext = BuildContext(parent: stack)
+        let childContext = BuildContext(parent: stack) { [weak stack] view, before in
+            guard let stack else { return }
+            if let before, let index = stack.arrangedSubviews.firstIndex(of: before) {
+                stack.insertArrangedSubview(view, at: index)
+            } else {
+                stack.addArrangedSubview(view)
+            }
+        }
         for child in content.buildList(in: childContext) {
             stack.addArrangedSubview(child)
         }

@@ -18,4 +18,9 @@ public struct EmptyView: RepresentableNode {
     public func build(in context: BuildContext) -> some UIView {
         UIView()
     }
+
+    /// Returns no views — an empty node contributes nothing to a list.
+    public func buildList(in context: BuildContext) -> [UIView] {
+        []
+    }
 }
