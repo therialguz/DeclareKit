@@ -33,7 +33,9 @@ extension RepresentableNode {
         insets: UIEdgeInsets
     ) -> LayoutModifier<Self> {
         LayoutModifier(self) { view in
-            guard let parent = view.superview else { return }
+            guard let parent = view.superview else {
+                fatalError("View does not have superview")
+            }
 
             // Resolve anchor source: layout guide or parent itself.
             let topTarget: NSLayoutYAxisAnchor

@@ -18,6 +18,8 @@ public struct EmptyView: RepresentableNode {
 
     /// Builds an empty `UIView` instance.
     public func build(in context: BuildContext) {
-        context.insertChild(UIView(), nil)
+        let view = UIView()
+        context.insertChild(view, nil)
+        view.translatesAutoresizingMaskIntoConstraints = false
     }
 }
